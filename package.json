@@ -1,0 +1,16 @@
+{
+  "name": "lamp.wedding",
+  "version": "0.0.1",
+  "author": "Paul Lessing <paul@paullessing.com>",
+  "license": "MIT",
+  "description": "Lam & Paul's wedding website",
+  "scripts": {
+  },
+  "devDependencies": {
+    "serverless-s3-sync": "^1.5.1",
+    "serverless-webpack": "^3.0.0",
+    "ts-loader": "^2.3.7",
+    "typescript": "^2.8.3",
+    "webpack": "^3.6.0"
+  }
+}

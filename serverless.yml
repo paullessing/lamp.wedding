@@ -1,0 +1,15 @@
+service:
+  name: lamp-wedding
+
+plugins:
+  - serverless-s3-sync
+
+provider:
+  name: aws
+  runtime: nodejs6.10
+  region: eu-west-2
+
+custom:
+  s3Sync:
+    - bucketName: lamp.wedding
+      localDir: frontend
