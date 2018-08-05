@@ -43,10 +43,12 @@ body {
 
   background-color: white;
   color: #363636;
-}
-body.night {
-  background-color: navy;
-  color: white;
+  transition: background-color 3000ms;
+
+  &.night {
+    background-color: navy;
+    color: white;
+  }
 }
 @media (max-device-width: 480px) {
   html {
