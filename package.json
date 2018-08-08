@@ -6,7 +6,7 @@
   "description": "Lam & Paul's wedding website",
   "scripts": {
     "ng": "ng",
-    "start": "yarn run start",
+    "start": "yarn run serve",
     "serve": "ng serve",
     "build": "ng build",
     "build-prod": "ng build --prod --aot",

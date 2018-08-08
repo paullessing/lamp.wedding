@@ -1,21 +1,23 @@
-<div class="content">
+<div
+  class="content"
+  [@background]="dayOrNight$ | async"
+>
+  <h2 class="save-the-date">
+    Save the Date
+  </h2>
   <div
     (click)="toggle()"
     class="lighthouse"
     [class.lighthouse--lit]="(dayOrNight$ | async) === 'night'"
-  >
-    <img
-      src="../../assets/lighthouse.svg"
-    >
+  ></div>
+  <div class="header">
+    <h1 class="header__title">
+      <a href="https://www.youtube.com/watch?v=Ld35lMnFQ10" target="_blank" class="header__link">
+        I <i class="icon-heart"><span class="text-hide">&hearts;</span></i> LamP
+      </a>
+    </h1>
+    <h2 class="header__sub-title">
+      24 Aug 2019
+    </h2>
   </div>
-  <!--<div class="header">-->
-    <!--<h1 class="header__title">-->
-      <!--<a href="https://www.youtube.com/watch?v=Ld35lMnFQ10" target="_blank" class="header__link">-->
-        <!--I <i class="icon-heart"><span class="text-hide">&hearts;</span></i> LamP-->
-      <!--</a>-->
-    <!--</h1>-->
-    <!--<h2 class="header__sub-title">-->
-      <!--24 Aug 2019-->
-    <!--</h2>-->
-  <!--</div>-->
 </div>
