@@ -1,15 +1,18 @@
 <div
-  class="content"
-  [@background]="dayOrNight$ | async"
+  class="homepage"
+  [@background]="night"
 >
-  <h2 class="save-the-date">
-    Save the Date
-  </h2>
   <div
     (click)="toggle()"
     class="lighthouse"
-    [class.lighthouse--lit]="(dayOrNight$ | async) === 'night'"
+    [class.lighthouse--lit]="night"
+    [@lighthouse]="night"
   ></div>
+
+  <h2 class="save-the-date">
+    Save the Date
+  </h2>
+
   <div class="header">
     <h1 class="header__title">
       <a href="https://www.youtube.com/watch?v=Ld35lMnFQ10" target="_blank" class="header__link">

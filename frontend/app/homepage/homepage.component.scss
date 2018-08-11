@@ -5,7 +5,7 @@
   flex-direction: row;
 }
 
-.content {
+.homepage {
   align-self: stretch;
   width: 100%;
   display: flex;
@@ -52,12 +52,22 @@ $lighthouse-ratio: 76px / 212px;
     background-image: url('../../assets/lighthouse-lit.svg');
 
     opacity: 0;
-    transition: all 2s;
+    transition: all 2s cubic-bezier(0, 1, .61, 1); //cubic-bezier(1, .06, .83, .92);
   }
 
   &--lit::after {
     opacity: 1;
-    transition: all 2s;
+    transition: all 2s cubic-bezier(.39, 0, 1, 0); // cubic-bezier(.17, .08, 0, .94);
+  }
+}
+
+@mixin fade-text {
+  opacity: 0;
+  transition: opacity 2s cubic-bezier(0, 1, .19, 1);
+
+  .night & {
+    opacity: 1;
+    transition: opacity 2s cubic-bezier(.81, 0, 1, 0);
   }
 }
 
@@ -68,11 +78,14 @@ $lighthouse-ratio: 76px / 212px;
 
   font-size: 5.5rem;
   margin: 0 0 2rem;
+
+  @include fade-text;
 }
 
 .header {
   text-align: center;
   color: white;
+  @include fade-text;
 
   &__title {
     font-weight: normal;
@@ -124,7 +137,7 @@ $lighthouse-ratio: 76px / 212px;
 }
 
 @media screen and (orientation: landscape) and (max-device-height: 480px) {
-  .content {
+  .homepage {
     flex-wrap: wrap;
   }
   .save-the-date {
