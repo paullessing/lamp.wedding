@@ -1,26 +1,54 @@
 <div
   class="homepage"
-  [@background]="night"
+  [class.homepage--night]="animationState !== 'day'"
+  [@fadeBackground]="animationState"
+  (@fadeBackground.done)="showTitle()"
 >
-  <div
-    (click)="toggle()"
-    class="lighthouse"
-    [class.lighthouse--lit]="night"
-    [@lighthouse]="night"
-  ></div>
+  <div class="homepage__container">
+    <div
+      (click)="goToNight()"
+      class="homepage__lighthouse"
+      [@fadeLighthouse]="animationState"
+      (@fadeLighthouse.done)="showDetails()"
+    ></div>
 
-  <h2 class="save-the-date">
-    Save the Date
-  </h2>
+    <div class="homepage__text">
+      <h2
+        [@fadeTitle]="animationState"
+        class="save-the-date homepage__save-the-date"
+      >
+        Save the Date
+      </h2>
+    </div>
 
-  <div class="header">
-    <h1 class="header__title">
-      <a href="https://www.youtube.com/watch?v=Ld35lMnFQ10" target="_blank" class="header__link">
-        I <i class="icon-heart"><span class="text-hide">&hearts;</span></i> LamP
-      </a>
-    </h1>
-    <h2 class="header__sub-title">
-      24 Aug 2019
-    </h2>
+    <div
+      class="homepage__title header"
+      [@fadeHeader]="animationState"
+    >
+      <h1
+        class="header__title"
+        [@growTitle]="animationState"
+      >
+        <a href="https://www.youtube.com/watch?v=Ld35lMnFQ10" target="_blank" class="header__link">
+          I <i class="icon-heart"><span class="text-hide">&hearts;</span></i> LamP
+        </a>
+      </h1>
+      <h2 class="header__sub-title">
+        24 Aug 2019
+      </h2>
+      <div
+        [@fadeDetails]="animationState"
+      >
+        <h2 style="font-weight: normal; font-size: 4rem; margin: 0">
+          London<sup>*</sup>
+        </h2>
+        <p style="font-size: 2.5rem">
+          <sup>*</sup>
+          Due to location restrictions,<br />
+          we are unable to accommodate children.
+        </p>
+      </div>
+    </div>
   </div>
+
 </div>
