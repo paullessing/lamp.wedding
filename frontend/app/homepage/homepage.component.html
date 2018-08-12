@@ -1,15 +1,14 @@
 <div
   class="homepage"
   [class.homepage--night]="animationState !== 'day'"
-  [@fadeBackground]="animationState"
 >
-  <div style="position:fixed; left: 0; top: 0; z-index: 1000">
-    <button (click)="animationState='day'">Day</button>
-    <button (click)="animationState='night'">Night</button>
-    <button (click)="animationState='title'">Title</button>
-    <button (click)="animationState='details'">Details</button>
-    <div style="display: inline-block; background-color: white">{{ animationState }}</div>
-  </div>
+  <!--<div style="position:fixed; left: 0; top: 0; z-index: 1000">-->
+    <!--<button (click)="animationState='day'">Day</button>-->
+    <!--<button (click)="animationState='night'">Night</button>-->
+    <!--<button (click)="animationState='title'">Title</button>-->
+    <!--<button (click)="animationState='details'">Details</button>-->
+    <!--<div style="display: inline-block; background-color: white">{{ animationState }}</div>-->
+  <!--</div>-->
   <div class="homepage__container">
     <div
       (click)="start()"
@@ -17,43 +16,41 @@
       [@lighthouseFadeAway]="animationState"
     ></div>
 
-    <div class="homepage__text">
+    <h1
+      [@title]="animationState"
+      style="font-weight: normal; font-size: 8vh; margin: 0"
+    >
+      <a href="https://www.youtube.com/watch?v=Ld35lMnFQ10" target="_blank" class="header__link">
+        I <i class="icon-heart"><span class="text-hide">&hearts;</span></i> LamP
+      </a>
+    </h1>
+
+    <div
+      [@detailsFadeIn]="animationState"
+      style="text-align: center"
+    >
       <h2
-        [@titleFadeIn]="animationState"
-        class="save-the-date homepage__save-the-date"
+        class="save-the-date"
+        style="font-weight: normal; font-size: 10vh; margin-top: 1vh; margin-bottom: 4vh"
       >
         Save the Date
       </h2>
-    </div>
-
-    <div
-      class="homepage__title header"
-      [@headerMoveToTop]="animationState"
-    >
-      <h1
-        class="header__title"
+      <p
+        class="date-and-location"
+        style="font-size: 8vh; margin-top: 0; margin-bottom: 6vh"
       >
-        <a href="https://www.youtube.com/watch?v=Ld35lMnFQ10" target="_blank" class="header__link">
-          I <i class="icon-heart"><span class="text-hide">&hearts;</span></i> LamP
-        </a>
-      </h1>
-      <div
-        [@detailsFadeIn]="animationState"
+        24 Aug 2019<br />
+        London
+      </p>
+      <p
+        class="signoff"
+        style="font-size: 6vh; margin: 0"
       >
-        <h2 style="font-weight: normal; font-size: 4rem; margin: 0">
-          24 Aug 2019<br />
-          London
-        </h2>
-      </div>
-      <div
-        *ngIf="showSignoff"
-        @signoffFadeIn
-      >
-        <p style="font-size: 4rem">
-          See you there!<br>
-          Lam + Paul
-        </p>
-      </div>
+        See you there!<br />
+        <span style="font-size: 8vh">
+          Lam & Paul
+        </span>
+      </p>
     </div>
   </div>
 

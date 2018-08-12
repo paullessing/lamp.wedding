@@ -1,68 +1,36 @@
-import { Component, OnDestroy, OnInit } from '@angular/core';
-import { DayNightService } from '../services/day-night.service';
-import { animate, group, keyframes, query, state, style, transition, trigger } from '@angular/animations';
-
-// @Component({
-//   selector: 'inner',
-//   template: `
-//     <div [@queryAnimation]="exp">
-//       <h1>Title</h1>
-//       <div class="content">
-//         Blah blah blah
-//       </div>
-//     </div>
-//   `,
-//   animations: [
-//     trigger('queryAnimation', [
-//       transition('* => goAnimate', [
-//         // hide the inner elements
-//         query('h1', style({ opacity: 0 })),
-//         query('.content', style({ opacity: 0 })),
-//
-//         // animate the inner elements in, one by one
-//         query('h1', animate(1000, style({ opacity: 1 })),
-//         query('.content', animate(1000, style({ opacity: 1 })),
-//       ])
-//     ])
-//   ]
-// })
-// class Cmp {
-//   exp = '';
-//
-//   goAnimate() {
-//     this.exp = 'goAnimate';
-//   }
-// }
-
+import { Component } from '@angular/core';
+import { animate, group, query, state, style, transition, trigger } from '@angular/animations';
 
 @Component({
   selector: 'app-homepage',
   templateUrl: './homepage.component.html',
   styleUrls: ['./homepage.component.scss'],
   animations: [
-    trigger('fadeBackground', [
-      state('*', style({ backgroundColor: '#001d77' })),
-      state('day', style({ backgroundColor: 'white' })),
-      transition('day => night', animate('2s')),
-    ]),
-    trigger('titleFadeIn', [
-      state('*', style({ display: 'block' })),
-      state('night, title, details', style({ display: 'block', opacity: 1 })),
+    trigger('title', [
+      state('day', style({ display: 'none', fontSize: '4em' })),
+      state('night', style({ display: 'block', fontSize: '4em' })),
+      state('title, details', style({ fontSize: '7em' })),
       transition('day => night', [
-        style({ display: 'block', opacity: 0 }),
-        animate('2s', style({ display: 'block', opacity: 1 })),
+        style({ display: 'block', opacity: 0, fontSize: '4em' }),
+        animate('2s cubic-bezier(.81, 0, 1, 0)', style({ display: 'block', opacity: 1, fontSize: '4em' })),
+      ]),
+      transition('night => title', [
+        animate('1.5s 1.5s ease-in-out'),
       ]),
     ]),
     trigger('lighthouseFadeAway', [
       state('title, details', style({ display: 'none' })),
       transition('night => title', [
-        style({ display: 'block', opacity: 1 }),
-        animate('2s', style({ opacity: 0, offset: 1 }))
+        style({ display: 'block', opacity: 1, height: '*', marginTop: '*', marginBottom: '*' }),
+        group([
+          animate('2s', style({ opacity: 0 })),
+          animate('1.5s 1.5s ease-in-out', style({ height: 0, marginTop: 0, marginBottom: 0 })),
+        ])
       ]),
     ]),
 
     trigger('headerMoveToTop', [
-      state('title, details', style({ top: '23vh', fontSize: '1.2rem' })),
+      state('title, details', style({ top: '23vh', fontSize: '1.2em' })),
       transition('night => title', [
         animate('1.5s 1.5s ease-in-out'),
       ]),
@@ -70,11 +38,21 @@ import { animate, group, keyframes, query, state, style, transition, trigger } f
 
     trigger('detailsFadeIn', [
       state('*', style({ display: 'none' })),
-      state('details', style({ display: 'block', opacity: 1 })),
-      transition('title => details', [
-        style({ display: 'block', opacity: 0 }),
-        animate('1.5s ease-in-out', style({ opacity: 1 })),
-      ]),
+      state('details', style({ display: 'block' })),
+      transition('* => details', group([
+        query('.save-the-date', [
+          style({ opacity: 0 }),
+          animate('2s ease-in', style({ opacity: 1 }))
+        ]),
+        query('.date-and-location', [
+          style({ opacity: 0 }),
+          animate('2s 2.5s ease-in', style({ opacity: 1 }))
+        ]),
+        query('.signoff', [
+          style({ opacity: 0 }),
+          animate('2s 5.5s ease-in', style({ opacity: 1 }))
+        ]),
+      ])),
     ]),
 
     trigger('signoffFadeIn', [
@@ -83,27 +61,6 @@ import { animate, group, keyframes, query, state, style, transition, trigger } f
         animate('1.5s ease-in-out', style({ opacity: 1 })),
       ]),
     ]),
-
-    //   state('false', style({
-    //     backgroundColor: 'white'
-    //   })),
-    //   state('true', style({
-    //     backgroundColor: '#001d77'
-    //   })),
-    //   transition('false => true', [animate('2s')]),
-    // ]),
-    // trigger('lighthouse', [
-    //   state('false', style({
-    //     opacity: '1'
-    //   })),
-    //   state('true', style({
-    //     opacity: '0'
-    //   })),
-    //   transition('false => true', [
-    //     animate('2s', style({ opacity: '1' })),
-    //     animate('3s', style({ opacity: '0' })),
-    //   ]),
-    // ]),
   ]
 })
 export class HomepageComponent {
@@ -123,7 +80,7 @@ export class HomepageComponent {
     this.animationState = 'night';
     setTimeout(() => this.animationState = 'title', 6000);
     setTimeout(() => this.animationState = 'details', 9000);
-    setTimeout(() => this.showSignoff = true, 11000);
+    setTimeout(() => this.showSignoff = true, 10000);
   }
 
 }
