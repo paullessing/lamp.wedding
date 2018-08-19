@@ -94,6 +94,9 @@ testem.log
 # Serverless directories
 .serverless
 
+# Webpack directories
+.webpack
+
 # System Files
 .DS_Store
 Thumbs.db

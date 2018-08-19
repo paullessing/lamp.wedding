@@ -1,20 +1,57 @@
 service:
   name: lamp-wedding
 
-plugins:
-  - serverless-hooks-plugin
-  - serverless-s3-sync
-
-provider:
-  name: aws
-  runtime: nodejs6.10
-  region: eu-west-2
-
 custom:
   hooks:
     before:package:createDeploymentArtifacts:
-      - yarn run build-prod
+    - yarn run build-prod
   s3Sync:
-    - bucketName: lamp.wedding
-      localDir: dist/frontend
-      acl: public-read
+  - bucketName: dev.lamp.wedding
+    localDir: dist/frontend
+    acl: public-read
+
+plugins:
+  - serverless-hooks-plugin
+  - serverless-s3-sync
+  - serverless-webpack
+
+provider:
+  name: aws
+  runtime: nodejs8.10
+  region: eu-west-2
+  iamRoleStatements:
+    - Effect: Allow
+      Action:
+      - dynamodb:DescribeTable
+      - dynamodb:Query
+      - dynamodb:Scan
+      - dynamodb:GetItem
+      - dynamodb:PutItem
+      - dynamodb:BatchWriteItem
+      - dynamodb:UpdateItem
+      - dynamodb:DeleteItem
+      Resource: arn:aws:dynamodb:eu-west-2:*:*
+
+resources:
+  Resources:
+    guestsTable:
+      Type: AWS::DynamoDB::Table
+      Properties:
+        TableName: lamp.wedding.guests
+        AttributeDefinitions:
+        - AttributeName: id
+          AttributeType: S
+        KeySchema:
+        - AttributeName: id
+          KeyType: HASH
+        ProvisionedThroughput:
+          ReadCapacityUnits: 1
+          WriteCapacityUnits: 1
+
+functions:
+  hello:
+    handler: server.hello
+    events:
+    - http:
+        method: get
+        path: hello
