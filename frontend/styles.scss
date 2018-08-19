@@ -40,13 +40,6 @@ body {
   display: flex;
   align-items: center;
   justify-content: center;
-
-  background-color: white;
-  color: #363636;
-}
-body.night {
-  background-color: navy;
-  color: white;
 }
 @media (max-device-width: 480px) {
   html {
