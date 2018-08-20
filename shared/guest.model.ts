@@ -1,4 +1,5 @@
 export type Uuid = string;
+export type DateString = string;
 
 export interface Guest {
   id: Uuid | null;
@@ -6,6 +7,7 @@ export interface Guest {
   lastName: string;
   email: string;
   groupId?: string;
+  viewedSaveTheDate?: DateString;
 }
 
 export interface GuestLookup {
