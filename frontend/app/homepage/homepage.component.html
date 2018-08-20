@@ -1,53 +1,56 @@
 <div
   class="homepage"
   [class.homepage--night]="animationState !== 'day'"
-  [@fadeBackground]="animationState"
-  (@fadeBackground.done)="showTitle()"
 >
+  <!--<div style="position:fixed; left: 0; top: 0; z-index: 1000">-->
+    <!--<button (click)="animationState='day'">Day</button>-->
+    <!--<button (click)="animationState='night'">Night</button>-->
+    <!--<button (click)="animationState='title'">Title</button>-->
+    <!--<button (click)="animationState='details'">Details</button>-->
+    <!--<div style="display: inline-block; background-color: white">{{ animationState }}</div>-->
+  <!--</div>-->
   <div class="homepage__container">
     <div
-      (click)="goToNight()"
+      (click)="start()"
       class="homepage__lighthouse"
-      [@fadeLighthouse]="animationState"
-      (@fadeLighthouse.done)="showDetails()"
+      [@lighthouseFadeAway]="animationState"
     ></div>
 
-    <div class="homepage__text">
+    <h1
+      [@title]="animationState"
+      style="font-weight: normal; font-size: 8vh; margin: 0"
+    >
+      <a href="https://www.youtube.com/watch?v=Ld35lMnFQ10" target="_blank" class="header__link">
+        I <i class="icon-heart"><span class="text-hide">&hearts;</span></i> LamP
+      </a>
+    </h1>
+
+    <div
+      [@detailsFadeIn]="animationState"
+      style="text-align: center"
+    >
       <h2
-        [@fadeTitle]="animationState"
-        class="save-the-date homepage__save-the-date"
+        class="save-the-date"
+        style="font-weight: normal; font-size: 10vh; margin-top: 1vh; margin-bottom: 4vh"
       >
         Save the Date
       </h2>
-    </div>
-
-    <div
-      class="homepage__title header"
-      [@fadeHeader]="animationState"
-    >
-      <h1
-        class="header__title"
-        [@growTitle]="animationState"
+      <p
+        class="date-and-location"
+        style="font-size: 8vh; margin-top: 0; margin-bottom: 6vh"
       >
-        <a href="https://www.youtube.com/watch?v=Ld35lMnFQ10" target="_blank" class="header__link">
-          I <i class="icon-heart"><span class="text-hide">&hearts;</span></i> LamP
-        </a>
-      </h1>
-      <h2 class="header__sub-title">
-        24 Aug 2019
-      </h2>
-      <div
-        [@fadeDetails]="animationState"
+        24 Aug 2019<br />
+        London
+      </p>
+      <p
+        class="signoff"
+        style="font-size: 6vh; margin: 0"
       >
-        <h2 style="font-weight: normal; font-size: 4rem; margin: 0">
-          London<sup>*</sup>
-        </h2>
-        <p style="font-size: 2.5rem">
-          <sup>*</sup>
-          Due to location restrictions,<br />
-          we are unable to accommodate children.
-        </p>
-      </div>
+        See you there!<br />
+        <span style="font-size: 8vh">
+          Lam & Paul
+        </span>
+      </p>
     </div>
   </div>
 
