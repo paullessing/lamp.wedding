@@ -9,12 +9,17 @@ provider:
   name: aws
   runtime: nodejs6.10
   region: eu-west-2
+  stage: dev
 
 custom:
+  stage: ${opt:stage, self:provider.stage}
+  buckets:
+    prod: lamp.wedding
+    dev: dev.lamp.wedding
   hooks:
     before:package:createDeploymentArtifacts:
       - yarn run build-prod
   s3Sync:
-    - bucketName: lamp.wedding
+    - bucketName: ${self:custom.buckets.${self:custom.stage}}
       localDir: dist/frontend
       acl: public-read
