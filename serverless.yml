@@ -53,5 +53,13 @@ functions:
     handler: server.guestsPutAll
     events:
     - http:
+        cors: true
         method: put
         path: guests
+  logView:
+    handler: server.logView
+    events:
+    - http:
+        cors: true
+        method: put
+        path: view

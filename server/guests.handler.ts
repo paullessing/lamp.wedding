@@ -1,25 +1,10 @@
 import { APIGatewayEvent, Context, ProxyResult } from 'aws-lambda';
 import * as parseCsv from 'csv-parse/lib/sync'
 import { makeResponse } from './util/http-helpers';
-import { LookupTable } from './util/database';
-import { Guest, GuestLookup } from '../shared/guest.model';
+import { Guest } from '../shared/guest.model';
+import { guestsTable } from './db/guests.table';
 
 export const SECRET = '58fb6aabb1806843877b8c8926aa710e0a1d7c1891e60764a801068a756e0c22';
-
-const guestsTable = new LookupTable<Guest, GuestLookup>(
-  'lamp.wedding.guests',
-  (guest: Guest) => {
-    try { return {
-      firstName: guest.firstName.replace(/\s+/i, '').toLocaleLowerCase(),
-      lastName: guest.lastName.replace(/\s+/i, '').toLocaleLowerCase(),
-      email: guest.email.toLocaleLowerCase(),
-      groupId: guest.groupId
-    }; } catch (e) {
-      console.log('Failed to convert', guest);
-      throw e;
-    }
-  }
-);
 
 export async function putAll(event: APIGatewayEvent, context: Context): Promise<ProxyResult> {
   const authHeader = event.headers && (event.headers['X-Auth-Token'] || event.headers['x-auth-token']);
