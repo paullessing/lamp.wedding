@@ -104,6 +104,11 @@ export class LookupTable<T extends { id: string | number }, Lookup = any> extend
     return Promise.all(results);
   }
 
+  public async count(): Promise<number> {
+    const all = await this.getLookupMap();
+    return Object.keys(all.all).length;
+  }
+
   private async addOrUpdateLookupEntries(lookups: LookupEntry<Lookup>[]): Promise<void> {
     const map = await this.getLookupMap();
     const newMap = {
@@ -113,7 +118,7 @@ export class LookupTable<T extends { id: string | number }, Lookup = any> extend
     for (const lookup of lookups) {
       newMap.all[lookup.id] = lookup;
     }
-    await this.put(newMap as any);
+    await super.put(newMap as any);
   }
 
   private async getLookupMap(): Promise<LookupMap<Lookup>> {
@@ -170,7 +175,7 @@ export function put<T>(tableName: string, item: T, primaryKey: string = 'id', id
     console.log('Putting:', itemToInsert);
 
     docClient.put(itemToInsert, (error) => {
-      console.log('Finished inserting' + (error ? ' with error' : ''), error);
+      console.log('Finished inserting' + (error ? ' with error' : ''), error || '');
       if (error) {
         reject(error);
       } else {
@@ -230,7 +235,7 @@ export function putMulti<T>(tableName: string, items: T[], primaryKey: string = 
       console.log('Putting:', request);
 
       docClient.batchWrite(request, (error) => {
-        console.log('Finished inserting' + (error ? ' with error' : ''), error);
+        console.log('Finished inserting' + (error ? ' with error' : ''), error || '');
         if (error) {
           reject(error);
         } else {

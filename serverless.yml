@@ -49,9 +49,9 @@ resources:
           WriteCapacityUnits: 1
 
 functions:
-  hello:
-    handler: server.hello
+  putGuests:
+    handler: server.guestsPutAll
     events:
     - http:
-        method: get
-        path: hello
+        method: put
+        path: guests

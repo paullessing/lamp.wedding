@@ -1,13 +1,8 @@
-import { APIGatewayEvent, Callback, Context, Handler } from 'aws-lambda';
+import * as guests from './guests.handler';
+import { createRequestHandler } from './util/http-helpers';
 
-export const hello: Handler = (event: APIGatewayEvent, context: Context, cb: Callback) => {
-  const response = {
-    statusCode: 200,
-    body: JSON.stringify({
-      message: 'Go Serverless Webpack (Typescript) v1.0! Your function executed successfully!',
-      input: event,
-    }),
-  };
+const guestsPutAll = createRequestHandler(guests.putAll);
 
-  cb(null, response);
-}
+export {
+  guestsPutAll
+};
