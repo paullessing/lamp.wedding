@@ -6,7 +6,7 @@ custom:
     before:package:createDeploymentArtifacts:
     - yarn run build-prod
   s3Sync:
-  - bucketName: dev.lamp.wedding
+  - bucketName: lamp.wedding
     localDir: dist/frontend
     acl: public-read
 
@@ -63,3 +63,15 @@ functions:
         cors: true
         method: put
         path: view
+  sendTestEmail:
+    handler: server.sendTestEmail
+    events:
+    - http:
+        method: post
+        path: email/test
+  sendSaveTheDate:
+    handler: server.sendSaveTheDate
+    events:
+    - http:
+        method: post
+        path: email/save-the-date

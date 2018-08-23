@@ -2,12 +2,13 @@ import { APIGatewayEvent, Callback, Context, Handler, ProxyResult } from 'aws-la
 
 export type ProxyHandler = (event: APIGatewayEvent, context: Context) => ProxyResult | Promise<ProxyResult>;
 
-export function makeResponse(statusCode: number, body?: any): ProxyResult {
+export function makeResponse(statusCode: number, body?: any, headers: { [header: string]: string } = {}): ProxyResult {
   return {
     statusCode,
     body: (body !== null && typeof body !== 'undefined') ? JSON.stringify(body) : undefined,
     headers: {
-      'Access-Control-Allow-Origin' : '*' // TODO scope
+      'Access-Control-Allow-Origin' : '*', // TODO scope
+      ...headers
     }
   };
 }

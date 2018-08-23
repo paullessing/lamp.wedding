@@ -104,6 +104,11 @@ export class LookupTable<T extends { id: string | number }, Lookup = any> extend
     return Promise.all(results);
   }
 
+  public async all(): Promise<T[]> {
+    const all = await super.all();
+    return all.filter((entry) => entry.id !== '_all');
+  }
+
   public async count(): Promise<number> {
     const all = await this.getLookupMap();
     return Object.keys(all.all).length;

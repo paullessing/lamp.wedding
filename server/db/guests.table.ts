@@ -6,8 +6,8 @@ export const guestsTable = new LookupTable<Guest, GuestLookup>(
   (guest: Guest) => {
     try { return {
       firstName: guest.firstName.replace(/\s+/i, '').toLocaleLowerCase(),
-      lastName: guest.lastName.replace(/\s+/i, '').toLocaleLowerCase(),
-      email: guest.email.toLocaleLowerCase(),
+      lastName: guest.lastName && guest.lastName.replace(/\s+/i, '').toLocaleLowerCase(),
+      email: guest.email && guest.email.toLocaleLowerCase(),
       groupId: guest.groupId
     }; } catch (e) {
       console.log('Failed to convert', guest);

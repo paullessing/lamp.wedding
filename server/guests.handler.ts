@@ -3,30 +3,25 @@ import * as parseCsv from 'csv-parse/lib/sync'
 import { makeResponse } from './util/http-helpers';
 import { Guest } from '../shared/guest.model';
 import { guestsTable } from './db/guests.table';
-
-export const SECRET = '58fb6aabb1806843877b8c8926aa710e0a1d7c1891e60764a801068a756e0c22';
+import { ensureSecret } from './secret';
 
 export async function putAll(event: APIGatewayEvent, context: Context): Promise<ProxyResult> {
-  const authHeader = event.headers && (event.headers['X-Auth-Token'] || event.headers['x-auth-token']);
-  if (authHeader !== SECRET) {
-    console.warn(`Invalid X-Auth-Token header`);
-    throw makeResponse(401, 'Unauthenticated');
-  }
+  ensureSecret(event);
 
   if (!event.body) {
     console.warn(`Body not supplied`);
     throw makeResponse(400, 'Missing body');
   }
 
-  const guests = parseCsvInput(event.body);
+  const existingGuests = await guestsTable.all();
+
+  const guests = parseCsvInput(event.body, existingGuests.length);
   if (!guests || !guests.length) {
     console.warn(`No data: ${event.body}`);
     throw makeResponse(400, 'Bad Request');
   }
 
   console.log('Read data:', guests);
-
-  const existingGuests = await guestsTable.all();
 
   for (const guest of guests) {
     for (const existingGuest of existingGuests) {
@@ -48,7 +43,7 @@ export async function putAll(event: APIGatewayEvent, context: Context): Promise<
   });
 }
 
-function parseCsvInput(data: string): Guest[] {
+function parseCsvInput(data: string, startIndex): Guest[] {
   const parsed = parseCsv(data);
   const firstNameIndex = parsed[0].indexOf('firstName');
   const lastNameIndex = parsed[0].indexOf('lastName');
@@ -68,13 +63,19 @@ function parseCsvInput(data: string): Guest[] {
     throw makeResponse(400, 'Missing column "groupId"');
   }
 
+  let index = startIndex;
   return parsed.slice(1).map((row): Guest => {
     const guest: Guest = {
       id: null,
+      index: index++,
       firstName: row[firstNameIndex],
-      lastName: row[lastNameIndex],
-      email: row[emailIndex]
     };
+    if (typeof row[lastNameIndex] === 'string' && row[lastNameIndex]) {
+      guest.lastName = row[lastNameIndex];
+    }
+    if (typeof row[emailIndex] === 'string' && row[emailIndex]) {
+      guest.email = row[emailIndex];
+    }
     if (typeof row[groupIndex] === 'string' && row[groupIndex]) {
       guest.groupId = row[groupIndex];
     }

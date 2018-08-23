@@ -10,6 +10,8 @@ export async function logView(event: APIGatewayEvent, context: Context): Promise
     return makeResponse(400);
   }
 
+  console.log('Got an email', email);
+
   const users = await guestsTable.search((lookup) => {
     return lookup.email === email.toLocaleLowerCase();
   });
