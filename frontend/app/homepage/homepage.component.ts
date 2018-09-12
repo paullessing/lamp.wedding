@@ -78,9 +78,9 @@ export class HomepageComponent {
       return;
     }
     this.animationState = 'night';
-    setTimeout(() => this.animationState = 'title', 6000);
-    setTimeout(() => this.animationState = 'details', 9000);
-    setTimeout(() => this.showSignoff = true, 10000);
+    setTimeout(() => this.animationState = 'title', 3500);
+    setTimeout(() => this.animationState = 'details', 6500);
+    setTimeout(() => this.showSignoff = true, 5000);
   }
 
 }
