@@ -1,4 +1,4 @@
-import { Component } from '@angular/core';
+import { Component, OnInit } from '@angular/core';
 import { animate, group, query, state, style, transition, trigger } from '@angular/animations';
 
 @Component({
@@ -63,7 +63,7 @@ import { animate, group, query, state, style, transition, trigger } from '@angul
     ]),
   ]
 })
-export class HomepageComponent {
+export class HomepageComponent implements OnInit {
 
   public animationState: 'day' | 'night' | 'title' | 'details';
   public showSignoff = false;
@@ -71,6 +71,10 @@ export class HomepageComponent {
   constructor(
   ) {
     this.animationState = 'day';
+  }
+
+  public ngOnInit(): void {
+    setTimeout(() => this.start(), 2000);
   }
 
   public start(): void {
@@ -82,5 +86,4 @@ export class HomepageComponent {
     setTimeout(() => this.animationState = 'details', 6500);
     setTimeout(() => this.showSignoff = true, 5000);
   }
-
 }
