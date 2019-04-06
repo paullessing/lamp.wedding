@@ -6,8 +6,10 @@ import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import { HomepageComponent } from './homepage/homepage.component';
 import { DayNightService } from './services/day-night.service';
 import { HttpClientModule } from '@angular/common/http';
-import { RouterModule } from '@angular/router';
+import { Route, RouterModule, UrlSegment, UrlSegmentGroup } from '@angular/router';
 import { LogViewGuard } from './homepage/log-view.guard';
+import { DefaultPageComponent } from './default-page/default-page.component';
+import { LocationComponent } from './location/location.component';
 
 @NgModule({
   imports: [
@@ -15,6 +17,17 @@ import { LogViewGuard } from './homepage/log-view.guard';
     BrowserAnimationsModule,
     HttpClientModule,
     RouterModule.forRoot([{
+      matcher: (segments: UrlSegment[], group: UrlSegmentGroup, route: Route) => {
+        // Matches anything except the empty URL
+        return segments.length >= 1 ? { consumed: [] } : null
+      },
+      component: DefaultPageComponent,
+      children: [{
+        path: 'location',
+        component: LocationComponent
+      }]
+    },
+    {
       path: '**',
       canActivate: [LogViewGuard],
       component: HomepageComponent
@@ -23,6 +36,8 @@ import { LogViewGuard } from './homepage/log-view.guard';
   declarations: [
     AppComponent,
     HomepageComponent,
+    DefaultPageComponent,
+    LocationComponent,
   ],
   providers: [
     DayNightService,
