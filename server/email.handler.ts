@@ -5,7 +5,7 @@ import { guestsTable } from './db/guests.table';
 import { Guest, Uuid } from '../shared/guest.model';
 
 export async function sendTest(event: APIGatewayEvent, context: Context): Promise<ProxyResult> {
-  const body = await sendSaveTheDateEmail({
+  const body = await sendSaveTheDate3Email({
     names: ['Paul', 'Lam'],
     emails: ['lessing.paul+paul@gmail.com', 'lessing.paul+lam@gmail.com']
   });
@@ -17,7 +17,6 @@ export async function sendTest(event: APIGatewayEvent, context: Context): Promis
 }
 
 export async function sendSaveTheDate(event: APIGatewayEvent, context: Context): Promise<ProxyResult> {
-  if (2 + 2 === 4) throw new Error('Cannot call this');
   ensureSecret(event);
 
   const ids = event.body && event.body.split('\n') || [];

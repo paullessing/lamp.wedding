@@ -81,3 +81,9 @@ functions:
     - http:
         method: post
         path: email/save-the-date-2
+  sendSaveTheDate3:
+    handler: server.sendSaveTheDate3
+    events:
+    - http:
+        method: post
+        path: email/save-the-date-3
