@@ -25,6 +25,7 @@
     "@angular/platform-browser-dynamic": "^6.1.0",
     "@angular/router": "^6.1.0",
     "@types/uuid": "^3.4.3",
+    "bootstrap": "^4.3.1",
     "core-js": "^2.5.4",
     "csv-parse": "^2.5.0",
     "node-ses-any-promise": "^0.1.3",

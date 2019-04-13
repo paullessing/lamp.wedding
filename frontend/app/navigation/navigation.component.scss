@@ -1,0 +1,94 @@
+@import "../../styles/config/all";
+
+:host {
+  width: 100%;
+  display: block;
+
+  top: 0;
+  left: 0;
+  right: 0;
+}
+
+.navigation {
+  position: fixed;
+  left: 0;
+  right: 0;
+  top: 0;
+
+  background-color: rgba(lighten(white, 6.6%), 0.9); // TODO colour
+  padding: 1rem 2rem;
+  width: 100%;
+
+  display: flex;
+  justify-content: center;
+  align-items: center;
+
+  &__content {
+    max-width: 1024px;
+
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    flex: 1 1 auto;
+    list-style-type: none;
+    margin: 0 -1rem;
+    padding: 0;
+
+    font-family: $font-family-header;
+    font-size: 1.2rem;
+  }
+
+  &__item {
+    display: inline-block;
+    margin: 0 1rem;
+  }
+
+  &__link {
+    text-decoration: none;
+    position: relative;
+
+    &:hover,
+    &--active {
+      &::after {
+        display: block;
+        content: '';
+        position: absolute;
+        left: 0;
+        right: 0;
+        top: 100%;
+        height: 1px;
+        background-color: blue; // TODO colour
+      }
+    }
+
+    &:focus, &:active, &:hover {
+      color: inherit;
+      text-decoration: none;
+    }
+  }
+
+  &::before,
+  &::after {
+    display: block;
+    content: '';
+    width: 8rem;
+    height: 8rem;
+    background-size: contain;
+    background-repeat: no-repeat;
+  }
+  &::before {
+    //background-image: url("/assets/corner-swirl.svg");
+    background-position: top right;
+    position: absolute;
+    right: 1rem;
+    top: 100%;
+    margin-top: 1rem;
+  }
+  &::after {
+    //background-image: url("/assets/corner-swirl-bl.svg");
+    background-position: bottom left;
+    position: fixed;
+    left: 1rem;
+    bottom: 1rem;
+  }
+}

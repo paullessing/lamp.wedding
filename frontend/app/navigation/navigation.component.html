@@ -1,0 +1,20 @@
+<div class="navigation" #navbar>
+  <ul class="navigation__content">
+    <li
+      *ngFor="let item of items; let i = index"
+      class="navigation__item"
+    >
+      <a
+        class="navigation__link"
+        [class.navigation__link--active]="i === active"
+        [routerLink]="[item.location]"
+      >
+        {{ item.name ? item.name : '' }}
+        <i
+          *ngIf="item.icon"
+          class="icon-{{item.icon }} navigation__icon"
+        ></i>
+      </a>
+    </li>
+  </ul>
+</div>

@@ -10,6 +10,7 @@ import { Route, RouterModule, UrlSegment, UrlSegmentGroup } from '@angular/route
 import { LogViewGuard } from './homepage/log-view.guard';
 import { DefaultPageComponent } from './default-page/default-page.component';
 import { LocationComponent } from './location/location.component';
+import { NavigationComponent } from './navigation/navigation.component';
 
 @NgModule({
   imports: [
@@ -38,6 +39,7 @@ import { LocationComponent } from './location/location.component';
     HomepageComponent,
     DefaultPageComponent,
     LocationComponent,
+    NavigationComponent,
   ],
   providers: [
     DayNightService,
