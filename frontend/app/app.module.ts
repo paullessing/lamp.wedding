@@ -1,6 +1,5 @@
 import { BrowserModule } from '@angular/platform-browser';
 import { NgModule } from '@angular/core';
-
 import { AppComponent } from './app.component';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import { HomepageComponent } from './homepage/homepage.component';
@@ -11,6 +10,7 @@ import { LogViewGuard } from './homepage/log-view.guard';
 import { DefaultPageComponent } from './default-page/default-page.component';
 import { LocationComponent } from './location/location.component';
 import { NavigationComponent } from './navigation/navigation.component';
+import { ScheduleComponent } from './schedule/schedule.component';
 
 @NgModule({
   imports: [
@@ -23,10 +23,16 @@ import { NavigationComponent } from './navigation/navigation.component';
         return segments.length >= 1 ? { consumed: [] } : null
       },
       component: DefaultPageComponent,
-      children: [{
-        path: 'location',
-        component: LocationComponent
-      }]
+      children: [
+        {
+          path: 'location',
+          component: LocationComponent
+        },
+        {
+          path: 'schedule',
+          component: ScheduleComponent
+        },
+      ]
     },
     {
       path: '**',
@@ -40,6 +46,7 @@ import { NavigationComponent } from './navigation/navigation.component';
     DefaultPageComponent,
     LocationComponent,
     NavigationComponent,
+    ScheduleComponent,
   ],
   providers: [
     DayNightService,
