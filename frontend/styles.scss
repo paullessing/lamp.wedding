@@ -1,7 +1,5 @@
 @import "styles/config/all";
 @import "styles/fonts";
-//
-//@import "styles/bootstrap-variables";
 
 @import "~bootstrap/scss/bootstrap";
 
@@ -25,10 +23,10 @@ body, html {
 
   //background-color: $white;
   //background-color: $light-blue;
-  background-color: teal;
+  background-color: $navy;
 
   font-size: 16px;
-  //color: $navy;
+  color: $white;
   line-height: 1.4;
   font-family: sans-serif;
   font-weight: 400;
