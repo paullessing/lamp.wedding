@@ -27,16 +27,3 @@
 .day {
   margin-bottom: 4rem;
 }
-
-.location-list {
-  margin-left: 0;
-  padding-left: 0;
-  list-style-type: none;
-
-  > li {
-    margin-bottom: 0.5rem;
-    &::before {
-      //content: '- ';
-    }
-  }
-}
