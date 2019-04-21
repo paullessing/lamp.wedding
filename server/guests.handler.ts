@@ -1,5 +1,5 @@
 import { APIGatewayEvent, Context, ProxyResult } from 'aws-lambda';
-import * as parseCsv from 'csv-parse/lib/sync'
+import parseCsv from 'csv-parse/lib/sync'
 import { makeResponse } from './util/http-helpers';
 import { Guest } from '../shared/guest.model';
 import { guestsTable } from './db/guests.table';

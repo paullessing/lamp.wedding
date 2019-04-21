@@ -1,5 +1,5 @@
 import { DynamoDB } from 'aws-sdk';
-import * as uuid from 'uuid/v4';
+import uuid from 'uuid/v4';
 import DocumentClient = DynamoDB.DocumentClient;
 import WriteRequest = DocumentClient.WriteRequest;
 import { makeResponse } from './http-helpers';

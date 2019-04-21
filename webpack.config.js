@@ -2,15 +2,16 @@ const path = require('path');
 const slsw = require('serverless-webpack');
 const CopyWebpackPlugin = require('copy-webpack-plugin');
 
-const entries = {};
-
-Object.keys(slsw.lib.entries).forEach(
-  key => (entries[key] = ['./source-map-install.js', slsw.lib.entries[key]])
-);
+// const entries = {};
+//
+// Object.keys(slsw.lib.entries).forEach(
+//   key => (entries[key] = ['./source-map-install.js', slsw.lib.entries[key]])
+// );
 
 module.exports = {
   mode: slsw.lib.webpack.isLocal ? 'development' : 'production',
-  entry: entries,
+  entry: slsw.lib.entries,
+  devtool: 'source-map',
   resolve: {
     extensions: [
       '.js',
@@ -22,7 +23,7 @@ module.exports = {
   },
   plugins: [
     new CopyWebpackPlugin([
-      { from: 'static', to: 'static' }
+      { from: 'dist/frontend', to: 'static' }
     ])
   ],
   output: {

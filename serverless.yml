@@ -4,16 +4,29 @@ service:
 custom:
   hooks:
     before:package:createDeploymentArtifacts:
-    - yarn run build-prod
-  s3Sync:
-  - bucketName: dev.lamp.wedding
-    localDir: dist/frontend
-    acl: public-read
+#      - yarn run build-prod
+#  s3Sync:
+#  - bucketName: dev.lamp.wedding
+#    localDir: dist/frontend
+#    acl: public-read
+  apigwBinary:
+    types:
+      - 'image/jpeg'
+      - 'image/jpg'
+      - 'image/png'
+      - 'font/*'
+      - 'font/'
+      - 'image/*'
+      - 'image/'
 
 plugins:
+  - serverless-offline
   - serverless-hooks-plugin
   - serverless-s3-sync
   - serverless-webpack
+  - serverless-aws-static-file-handler
+  - serverless-apigw-binary
+  - serverless-apigwy-binary
 
 provider:
   name: aws
@@ -49,6 +62,19 @@ resources:
           WriteCapacityUnits: 1
 
 functions:
+  serveStatic:
+    handler: frontend.serveStatic
+    events:
+      - http:
+          method: get
+          path: /assets/{proxy+}
+          contentHandling: CONVERT_TO_BINARY
+#      - http:
+#          method: get
+#          path: /
+#      - http:
+#          method: get
+#          path: /{proxy+}
   putGuests:
     handler: server.guestsPutAll
     events:
