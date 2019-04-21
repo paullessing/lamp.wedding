@@ -1,5 +1,6 @@
 const path = require('path');
 const slsw = require('serverless-webpack');
+const CopyWebpackPlugin = require('copy-webpack-plugin');
 
 const entries = {};
 
@@ -19,6 +20,11 @@ module.exports = {
       '.tsx'
     ]
   },
+  plugins: [
+    new CopyWebpackPlugin([
+      { from: 'static', to: 'static' }
+    ])
+  ],
   output: {
     libraryTarget: 'commonjs',
     path: path.join(__dirname, '.webpack'),

@@ -2,17 +2,17 @@ service:
   name: lamp-wedding
 
 custom:
-#  hooks:
-#    before:package:createDeploymentArtifacts:
-#    - yarn run build-prod
-#  s3Sync:
-#  - bucketName: lamp.wedding
-#    localDir: dist/frontend
-#    acl: public-read
+  hooks:
+    before:package:createDeploymentArtifacts:
+    - yarn run build-prod
+  s3Sync:
+  - bucketName: dev.lamp.wedding
+    localDir: dist/frontend
+    acl: public-read
 
 plugins:
-#  - serverless-hooks-plugin
-#  - serverless-s3-sync
+  - serverless-hooks-plugin
+  - serverless-s3-sync
   - serverless-webpack
 
 provider:
