@@ -2,31 +2,29 @@ service:
   name: lamp-wedding
 
 custom:
-  hooks:
-    before:package:createDeploymentArtifacts:
+  apiGateway:
+    binaryMediaTypes:
+      - image/png
+      - image/jpeg
+      - font/woff
+      - font/woff2
+      - font/ttf
+      - "*/*" # Using */* doesn't have side effects that I can tell. The HTML response works fine.
+
+#  hooks:
+#    before:package:createDeploymentArtifacts:
 #      - yarn run build-prod
 #  s3Sync:
 #  - bucketName: dev.lamp.wedding
 #    localDir: dist/frontend
 #    acl: public-read
-  apigwBinary:
-    types:
-      - 'image/jpeg'
-      - 'image/jpg'
-      - 'image/png'
-      - 'font/*'
-      - 'font/'
-      - 'image/*'
-      - 'image/'
 
 plugins:
   - serverless-offline
-  - serverless-hooks-plugin
-  - serverless-s3-sync
+#  - serverless-hooks-plugin
+#  - serverless-s3-sync
   - serverless-webpack
-  - serverless-aws-static-file-handler
-  - serverless-apigw-binary
-  - serverless-apigwy-binary
+  - serverless-aws-static-file-handler/plugins/BinaryMediaTypes
 
 provider:
   name: aws
