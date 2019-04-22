@@ -1,6 +1,7 @@
 const path = require('path');
 const slsw = require('serverless-webpack');
 const CopyWebpackPlugin = require('copy-webpack-plugin');
+const BuildAngularPlugin = require('./build-angular-plugin');
 
 module.exports = {
   mode: slsw.lib.webpack.isLocal ? 'development' : 'production',
@@ -16,9 +17,10 @@ module.exports = {
     ]
   },
   plugins: [
-    new CopyWebpackPlugin([
-      { from: 'dist/frontend', to: 'static' }
-    ])
+    // new CopyWebpackPlugin([
+    //   { from: 'dist/frontend', to: 'static' }
+    // ]),
+    new BuildAngularPlugin(slsw.lib)
   ],
   output: {
     libraryTarget: 'commonjs',
