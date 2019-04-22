@@ -10,7 +10,13 @@ custom:
       - font/woff2
       - font/ttf
       - "*/*" # Using */* doesn't have side effects that I can tell. The HTML response works fine.
-
+  customDomain:
+    domainName: dev.lamp.wedding
+    certificateArn: arn:aws:acm:us-east-1:984077873871:certificate/b0189c40-fed4-474f-82fd-689a8290f2cf
+#    basePath: ''
+    stage: ${self:provider.stage}
+    createRoute53Record: false
+    endpointType: edge
 #  hooks:
 #    before:package:createDeploymentArtifacts:
 #      - yarn run build-prod
@@ -25,6 +31,7 @@ plugins:
 #  - serverless-s3-sync
   - serverless-webpack
   - serverless-aws-static-file-handler/plugins/BinaryMediaTypes
+  - serverless-domain-manager
 
 provider:
   name: aws
