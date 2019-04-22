@@ -131,7 +131,7 @@ export class LookupTable<T extends { id: string | number }, Lookup = any> extend
     return map || {
       id: '_all',
       all: {}
-    };
+    } as LookupMap<Lookup>;
   }
 }
 

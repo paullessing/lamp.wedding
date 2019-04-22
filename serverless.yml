@@ -61,18 +61,14 @@ resources:
 
 functions:
   serveStatic:
-    handler: frontend.serveStatic
+    handler: server.serveStatic
     events:
       - http:
           method: get
           path: /assets/{proxy+}
-          contentHandling: CONVERT_TO_BINARY
-#      - http:
-#          method: get
-#          path: /
-#      - http:
-#          method: get
-#          path: /{proxy+}
+      - http:
+          method: get
+          path: /{proxy+}
   putGuests:
     handler: server.guestsPutAll
     events:
