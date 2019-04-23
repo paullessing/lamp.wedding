@@ -75,6 +75,9 @@ functions:
           path: /assets/{proxy+}
       - http:
           method: get
+          path: /
+      - http:
+          method: get
           path: /{proxy+}
   putGuests:
     handler: server.guestsPutAll
