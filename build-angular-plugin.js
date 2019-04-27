@@ -8,14 +8,11 @@ class BuildAngularPlugin {
   constructor(data) {
     const angular = data.options.angular;
     this.deploy = !!angular;
-
-    this.build = (angular === 'build') ||
-      // Also build if no function is specified i.e. if we're building everything
-      !data.options.function || !data.options.function.length;
+    this.build = angular === 'build';
   }
 
   apply(compiler) {
-    if (this.build) {
+    if (this.deploy) {
       compiler.hooks.emit.tapPromise('Build Angular', (compilation) => this.onEmit(compilation));
     }
   }
