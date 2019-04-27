@@ -1,19 +1,20 @@
 const angularCli = require('@angular/cli').default;
 const fs = require('fs-extra');
 const path = require('path');
+// const stringify = require('flatted/cjs').stringify;
 
 class BuildAngularPlugin {
+
   constructor(data) {
-    // TODO determine when to call this
-    // console.log(data.options);
-    // for (const x in data.options) {
-    //   console.log(x);
-    // }
-    // throw new Error('xx');
+    this.build = !!data.options.angular ||
+      // also build if no function is specified i.e. if we're building everything
+      !data.options.function || !data.options.function.length;
   }
 
   apply(compiler) {
-    compiler.hooks.emit.tapPromise('Build Angular', (compilation) => this.onEmit(compilation));
+    if (this.build) {
+      compiler.hooks.emit.tapPromise('Build Angular', (compilation) => this.onEmit(compilation));
+    }
   }
 
   async onEmit(compilation) {

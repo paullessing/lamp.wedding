@@ -45,6 +45,7 @@
     "@types/node": "^10.12.18",
     "@types/uuid": "^3.4.3",
     "codelyzer": "~5.0.0",
+    "flatted": "^2.0.0",
     "fs-extra": "^7.0.1",
     "jasmine-core": "~2.99.1",
     "jasmine-spec-reporter": "~4.2.1",
