@@ -6,8 +6,11 @@ const path = require('path');
 class BuildAngularPlugin {
 
   constructor(data) {
-    this.build = !!data.options.angular ||
-      // also build if no function is specified i.e. if we're building everything
+    const angular = data.options.angular;
+    this.deploy = !!angular;
+
+    this.build = (angular === 'build') ||
+      // Also build if no function is specified i.e. if we're building everything
       !data.options.function || !data.options.function.length;
   }
 
@@ -18,20 +21,21 @@ class BuildAngularPlugin {
   }
 
   async onEmit(compilation) {
-    const argArray = 'build --aot --prod'.split(/\s+/g);
 
-    // TODO enable or disable this
-    await angularCli({
-      cliArgs: argArray,
-      inputStream: process.stdin,
-      outputStream: process.stdout
-    });
+    if (this.build) {
+      const argArray = 'build --aot --prod'.split(/\s+/g);
+      await angularCli({
+        cliArgs: argArray,
+        inputStream: process.stdin,
+        outputStream: process.stdout
+      });
+    }
 
     const files = await this.generateFileList(path.join(__dirname, 'dist', 'frontend'), 'static', '');
 
-    console.log('File list =====');
-    console.log(files.join('\n'));
-    console.log('======');
+    // console.log('File list =====');
+    // console.log(files.join('\n'));
+    // console.log('======');
 
     files.forEach(({ path, source }) => {
       compilation.assets[path] = {
