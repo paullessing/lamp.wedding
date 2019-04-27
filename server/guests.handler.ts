@@ -1,4 +1,4 @@
-import { APIGatewayEvent, Context, ProxyResult } from 'aws-lambda';
+import { APIGatewayEvent, APIGatewayProxyResult, Context, ProxyResult } from 'aws-lambda';
 import parseCsv from 'csv-parse/lib/sync'
 import { makeResponse } from './util/http-helpers';
 import { Guest } from '../shared/guest.model';
@@ -40,6 +40,13 @@ export async function putAll(event: APIGatewayEvent, context: Context): Promise<
     insert: 'OK',
     total: count,
     added: insertedGuests.length
+  });
+}
+
+export async function searchGuestByName(event: APIGatewayEvent): Promise<ProxyResult> {
+  return makeResponse(200, {
+    results: [],
+    count: 0
   });
 }
 

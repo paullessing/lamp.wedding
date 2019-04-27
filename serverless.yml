@@ -67,18 +67,12 @@ resources:
           WriteCapacityUnits: 1
 
 functions:
-  serveStatic:
-    handler: server.serveStatic
+  searchGuestByName:
+    handler: server.searchGuestByName
     events:
-      - http:
-          method: get
-          path: /assets/{proxy+}
-      - http:
-          method: get
-          path: /
-      - http:
-          method: get
-          path: /{proxy+}
+    - http:
+        path: api/guests/find
+        method: get
   putGuests:
     handler: server.guestsPutAll
     events:
@@ -111,3 +105,15 @@ functions:
     - http:
         method: post
         path: email/save-the-date-2
+  serveStatic:
+    handler: server.serveStatic
+    events:
+    - http:
+        method: get
+        path: /assets/{proxy+}
+    - http:
+        method: get
+        path: /
+    - http:
+        method: get
+        path: /{proxy+}

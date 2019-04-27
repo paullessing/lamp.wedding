@@ -11,6 +11,8 @@ import { DefaultPageComponent } from './default-page/default-page.component';
 import { LocationComponent } from './location/location.component';
 import { NavigationComponent } from './navigation/navigation.component';
 import { ScheduleComponent } from './schedule/schedule.component';
+import { RsvpComponent } from './rsvp/rsvp.component';
+import { ReactiveFormsModule } from '@angular/forms';
 
 export function matchAllExceptEmptyUrl(segments: UrlSegment[], group: UrlSegmentGroup, route: Route): UrlMatchResult | null {
   // Matches anything except the empty URL
@@ -21,11 +23,18 @@ export function matchAllExceptEmptyUrl(segments: UrlSegment[], group: UrlSegment
   imports: [
     BrowserModule,
     BrowserAnimationsModule,
+
+    ReactiveFormsModule,
+
     HttpClientModule,
     RouterModule.forRoot([{
       matcher: matchAllExceptEmptyUrl,
       component: DefaultPageComponent,
       children: [
+        {
+          path: 'rsvp',
+          component: RsvpComponent
+        },
         {
           path: 'location',
           component: LocationComponent
@@ -49,6 +58,7 @@ export function matchAllExceptEmptyUrl(segments: UrlSegment[], group: UrlSegment
     LocationComponent,
     NavigationComponent,
     ScheduleComponent,
+    RsvpComponent,
   ],
   providers: [
     DayNightService,
