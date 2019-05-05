@@ -13,8 +13,6 @@ export const serveStatic: APIGatewayProxyHandler = async (event, context) => {
   }
 
   if (event.path.indexOf('/assets') === 0) {
-    console.log('Looks like a thing', assetsPath, JSON.stringify(event, null, '  '));
-
     // TODO do proper error if not found
     return assetsFileHandler.get(event, context);
   } else {
@@ -22,8 +20,11 @@ export const serveStatic: APIGatewayProxyHandler = async (event, context) => {
     if (result.statusCode !== 404) {
       return result;
     } else {
-      event.path = '/index.html';
-      return staticFileHandler.get(event, context);
+      return staticFileHandler.get({
+        ...event,
+        path: '/index.html',
+        pathParameters: null
+      }, context);
     }
   }
 };

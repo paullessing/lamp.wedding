@@ -18,8 +18,8 @@ class BuildAngularPlugin {
   }
 
   async onEmit(compilation) {
-
     if (this.build) {
+      console.log('Building Angular...');
       const argArray = 'build --aot --prod'.split(/\s+/g);
       await angularCli({
         cliArgs: argArray,
@@ -28,11 +28,13 @@ class BuildAngularPlugin {
       });
     }
 
+    console.log('Collecting files...');
     const files = await this.generateFileList(path.join(__dirname, 'dist', 'frontend'), 'static', '');
 
     // console.log('File list =====');
     // console.log(files.join('\n'));
     // console.log('======');
+    console.log(`${files.length} files collected.`);
 
     files.forEach(({ path, source }) => {
       compilation.assets[path] = {
