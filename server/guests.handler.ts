@@ -44,10 +44,27 @@ export async function putAll(event: APIGatewayEvent, context: Context): Promise<
 }
 
 export async function searchGuestByName(event: APIGatewayEvent): Promise<ProxyResult> {
-  return makeResponse(200, {
-    results: [],
-    count: 0
-  });
+  const queryParams = event.queryStringParameters || {};
+  const firstName = normalise(queryParams.firstName);
+  const lastName = normalise(queryParams.lastName);
+
+  console.log('User is searching for: ', firstName, lastName);
+
+  const matchFirstName = firstName.length >= 2;
+  const matchLastName = lastName.length >= 2;
+
+  if (!matchFirstName || !matchLastName) {
+    return makeResponse(400, { error: 'First and Last Name must be at least two characters each' });
+  }
+
+  const guests = await guestsTable.search((value) =>
+    value.firstName.indexOf(firstName) >= 0 && value.lastName.indexOf(lastName) >= 0
+  );
+
+  const matchedIds = guests.slice(0, 3).map((guest) => guest.id);
+  const results = await Promise.all(matchedIds.map((id) => guestsTable.find(id)));
+
+  return makeResponse(200, { results, count: results.length });
 }
 
 function parseCsvInput(data: string, startIndex): Guest[] {

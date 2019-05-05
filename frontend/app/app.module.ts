@@ -12,7 +12,9 @@ import { LocationComponent } from './location/location.component';
 import { NavigationComponent } from './navigation/navigation.component';
 import { ScheduleComponent } from './schedule/schedule.component';
 import { RsvpComponent } from './rsvp/rsvp.component';
-import { ReactiveFormsModule } from '@angular/forms';
+import { FormsModule, ReactiveFormsModule } from '@angular/forms';
+import { FindUserComponent } from './rsvp/find-user/find-user.component';
+import { GuestNamePipe } from './guest-name.pipe';
 
 export function matchAllExceptEmptyUrl(segments: UrlSegment[], group: UrlSegmentGroup, route: Route): UrlMatchResult | null {
   // Matches anything except the empty URL
@@ -32,8 +34,12 @@ export function matchAllExceptEmptyUrl(segments: UrlSegment[], group: UrlSegment
       component: DefaultPageComponent,
       children: [
         {
+          path: 'rsvp/:userId',
+          component: RsvpComponent,
+        },
+        {
           path: 'rsvp',
-          component: RsvpComponent
+          component: FindUserComponent,
         },
         {
           path: 'location',
@@ -59,6 +65,9 @@ export function matchAllExceptEmptyUrl(segments: UrlSegment[], group: UrlSegment
     NavigationComponent,
     ScheduleComponent,
     RsvpComponent,
+    FindUserComponent,
+
+    GuestNamePipe,
   ],
   providers: [
     DayNightService,

@@ -4,11 +4,12 @@ import DocumentClient = DynamoDB.DocumentClient;
 import WriteRequest = DocumentClient.WriteRequest;
 import { makeResponse } from './http-helpers';
 
+type Id = string | String | number; // Using "String" to be compatible with Phantom types which extend String
 const docClient = new DocumentClient();
 
-type IdGenerator = () => string | number;
+type IdGenerator = () => Id;
 
-export class Table<T extends { id: string | number }> {
+export class Table<T extends { id: Id }> {
   constructor(
     protected readonly tableName: string,
     protected readonly idGenerator: IdGenerator = uuid,
@@ -18,7 +19,7 @@ export class Table<T extends { id: string | number }> {
     return getAll(this.tableName);
   }
 
-  public find(id: string | number): Promise<T | null> {
+  public find(id: Id): Promise<T | null> {
     return get(this.tableName, '' + id, 'id');
   }
 
@@ -30,13 +31,13 @@ export class Table<T extends { id: string | number }> {
     return putMulti(this.tableName, items, 'id', this.idGenerator);
   }
 
-  public remove(id: string | number): Promise<void> {
+  public remove(id: Id): Promise<void> {
     return remove(this.tableName, '' + id, 'id');
   }
 }
 
 type LookupEntry<Lookup> = {
-  id: string | number;
+  id: Id;
   lookup: Lookup;
 }
 
@@ -45,7 +46,7 @@ type LookupMap<Lookup> = {
   all: { [key: string]: LookupEntry<Lookup> } | { [key: number]: LookupEntry<Lookup> };
 };
 
-export class LookupTable<T extends { id: string | number }, Lookup = any> extends Table<T> {
+export class LookupTable<T extends { id: Id }, Lookup = any> extends Table<T> {
   constructor(
     tableName: string,
     private readonly lookupGenerator: (value: T) => Lookup,
@@ -121,7 +122,8 @@ export class LookupTable<T extends { id: string | number }, Lookup = any> extend
       all: { ...map.all }
     };
     for (const lookup of lookups) {
-      newMap.all[lookup.id] = lookup;
+      const id = typeof lookup.id === 'number' ? lookup.id : lookup.id as string;
+      newMap.all[id] = lookup;
     }
     await super.put(newMap as any);
   }

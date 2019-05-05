@@ -1,8 +1,8 @@
 import { APIGatewayEvent, Context, ProxyResult } from 'aws-lambda';
-import { SaveTheDateEmailData, sendSaveTheDateEmail, sendSaveTheDate2Email, sendSaveTheDate3Email } from './email';
+import { SaveTheDateEmailData, sendSaveTheDate2Email, sendSaveTheDate3Email, sendSaveTheDateEmail } from './email';
 import { ensureSecret } from './secret';
 import { guestsTable } from './db/guests.table';
-import { Guest, Uuid } from '../shared/guest.model';
+import { Guest, GuestId } from '../shared/guest.model';
 
 export async function sendTest(event: APIGatewayEvent, context: Context): Promise<ProxyResult> {
   const body = await sendSaveTheDateEmail({
@@ -20,7 +20,7 @@ export async function sendSaveTheDate(event: APIGatewayEvent, context: Context):
   if (2 + 2 === 4) throw new Error('Cannot call this');
   ensureSecret(event);
 
-  const ids = event.body && event.body.split('\n') || [];
+  const ids = event.body && event.body.split('\n').map(GuestId.validate) || [];
 
   const guests = (await guestsTable.all())
     .sort((a, b) => a.index - b.index)
@@ -97,7 +97,7 @@ ${notSentList}`;
 export async function sendSaveTheDate2(event: APIGatewayEvent, context: Context): Promise<ProxyResult> {
   ensureSecret(event);
 
-  const ids = event.body && event.body.split('\n') || [];
+  const ids = event.body && event.body.split('\n').map(GuestId.validate) || [];
 
   const allGuests = await guestsTable.all();
 
@@ -176,7 +176,7 @@ ${notSentList}`;
 export async function sendSaveTheDate3(event: APIGatewayEvent, context: Context): Promise<ProxyResult> {
   ensureSecret(event);
 
-  const ids = event.body && event.body.split('\n') || [];
+  const ids = event.body && event.body.split('\n').map(GuestId.validate) || [];
   if (!ids.length) {
     return {
       statusCode: 204,
