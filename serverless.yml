@@ -73,6 +73,36 @@ functions:
     - http:
         path: api/guests/find
         method: get
+  getGuest:
+    handler: server.getGuestById
+    events:
+    - http:
+        path: api/guests/{id}
+        method: get
+        request:
+          parameters:
+            paths:
+              id: true
+  getResponse:
+    handler: server.getResponseData
+    events:
+    - http:
+        path: api/guests/{id}/response
+        method: get
+        request:
+          parameters:
+            paths:
+              id: true
+  putRsvp:
+    handler: server.putRsvp
+    events:
+    - http:
+        path: api/guests/{id}/rsvp
+        method: put
+        request:
+          parameters:
+            paths:
+              id: true
   putGuests:
     handler: server.guestsPutAll
     events:
