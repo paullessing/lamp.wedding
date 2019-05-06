@@ -7,10 +7,11 @@ import { ResponseData } from '../../../shared/response-data.model';
 import { DietaryRequirements, RsvpAnswer } from '../../../shared/rsvp-answer.model';
 import { GuestService } from '../services/guest.service';
 import { AttendingAnswer } from './attending/attending.component';
+import { Details } from './details/details.component';
+import { Song } from './song/song.component';
 
 @Component({
   selector: 'app-rsvp',
-  // styles: [`.display-card { color: black; }`],
 
   // TODO: This whole step business should be routing
   template: `
@@ -31,30 +32,23 @@ import { AttendingAnswer } from './attending/attending.component';
         (submit)="onAttendingSubmitted($event)"
       ></app-rsvp-attending>
 
-<!--      <app-rsvp-details-->
-<!--        *ngIf="step === 'details'"-->
-<!--        [answer]="answer"-->
-<!--        (submit)="onDetailsSubmitted($event)"-->
-<!--      ></app-rsvp-details>-->
-<!--      -->
+      <app-rsvp-details
+        *ngIf="step === 'details'"
+        [answer]="answer"
+        (submit)="onDetailsSubmitted($event)"
+      ></app-rsvp-details>
+
       <app-rsvp-dietaries
         *ngIf="step === 'food'"
         [answer]="answer"
         (submit)="onDietariesSubmitted($event)"
       ></app-rsvp-dietaries>
       
-<!--      <app-rsvp-transport-->
-<!--        *ngIf="step === 'transport'"-->
-<!--        [answer]="answer"-->
-<!--        [isFullGuest]="guest.type === 'full'"-->
-<!--        (submit)="onTransportSubmitted($event)"-->
-<!--      ></app-rsvp-transport>-->
-
-<!--      <app-rsvp-song-->
-<!--        *ngIf="step === 'song'"-->
-<!--        [answer]="answer"-->
-<!--        (submit)="onSongSubmitted($event)"-->
-<!--      ></app-rsvp-song>-->
+      <app-rsvp-song
+        *ngIf="step === 'song'"
+        [answer]="answer"
+        (submit)="onSongSubmitted($event)"
+      ></app-rsvp-song>
 
       <app-rsvp-confirm
         *ngIf="step === 'confirm'"
@@ -192,13 +186,13 @@ export class RsvpComponent implements OnInit {
     this.goToNextStep();
   }
 
-  // public onDetailsSubmitted({ email, phoneNumber }: Details): void {
-  //   this.answer.email = email;
-  //   this.answer.phoneNumber = phoneNumber;
-  //   this.hasChanged = true;
-  //
-  //   this.goToNextStep();
-  // }
+  public onDetailsSubmitted({ email, phoneNumber }: Details): void {
+    this.answer.email = email;
+    this.answer.phoneNumber = phoneNumber;
+    this.hasChanged = true;
+
+    this.goToNextStep();
+  }
 
   public onDietariesSubmitted(data: DietaryRequirements[]): void {
     this.answer.dietaries = data;
@@ -207,26 +201,16 @@ export class RsvpComponent implements OnInit {
     this.goToNextStep();
   }
 
-  // public onTransportSubmitted(data: TransportChoices): void {
-  //   this.answer = {
-  //     ...this.answer,
-  //     ...data
-  //   };
-  //   this.hasChanged = true;
-  //
-  //   this.goToNextStep();
-  // }
-  //
-  // public onSongSubmitted(song: Song): void {
-  //   this.answer = {
-  //     ...this.answer,
-  //     songArtist: song.artist,
-  //     songTitle: song.title
-  //   };
-  //   this.hasChanged = true;
-  //
-  //   this.goToNextStep();
-  // }
+  public onSongSubmitted(song: Song): void {
+    this.answer = {
+      ...this.answer,
+      songArtist: song.artist,
+      songTitle: song.title
+    };
+    this.hasChanged = true;
+
+    this.goToNextStep();
+  }
 
   public onConfirm(): void {
     console.log('CONFIRMED', this.answer);
@@ -264,24 +248,17 @@ export class RsvpComponent implements OnInit {
   private getNextStep(): string | null {
     switch (this.step) {
       case 'attending':
+        return 'details';
+      case 'details':
         if (this.answer.isAttending) {
           return 'food';
         } else {
           return 'confirm';
         }
-      // case 'details':
-      //   if (this.answer.isAttending) {
-      //     return this.guest.type === 'evening' ? 'transport' : 'food';
-      //   } else {
-      //     return 'confirm';
-      //   }
       case 'food':
+        return 'song';
+      case 'song':
         return 'confirm';
-      //   return 'transport';
-      // case 'transport':
-      //   return 'song';
-      // case 'song':
-      //   return 'confirm';
       case 'confirm':
         return 'done';
 
@@ -324,25 +301,20 @@ export class RsvpComponent implements OnInit {
       }
     }
 
-    // if (step === 'details' || !this.answer.email || !this.answer.phoneNumber) {
-    //   doGoToStep('details');
-    //   return;
-    // }
+    if (step === 'details' || !this.answer.email || !this.answer.phoneNumber) {
+      doGoToStep('details');
+      return;
+    }
 
     if (step === 'food' || !this.answer.dietaries || !this.answer.dietaries.length) {
       doGoToStep('food');
       return;
     }
 
-    // if (step === 'food' && !isFullGuest || step === 'transport' || !this.isTransportComplete()) {
-    //   doGoToStep('transport');
-    //   return;
-    // }
-    //
-    // if (step === 'song' || !this.answer.songTitle || !this.answer.songArtist) {
-    //   doGoToStep('song');
-    //   return;
-    // }
+    if (step === 'song' || !this.answer.songTitle || !this.answer.songArtist) {
+      doGoToStep('song');
+      return;
+    }
 
     if (step === 'confirm') {
       doGoToStep('confirm');
@@ -356,30 +328,4 @@ export class RsvpComponent implements OnInit {
 
     doGoToStep('attending'); // Catch-all
   }
-
-  // private isTransportComplete(): boolean {
-  //   if (!this.answer) {
-  //     return false;
-  //   }
-  //   if (this.guest.type === 'full') {
-  //     if (typeof this.answer.requiresLiftToVenue !== 'boolean') {
-  //       return false;
-  //     }
-  //     if (!this.answer.requiresLiftToVenue && this.answer.canOfferLiftToVenue &&
-  //       (!this.answer.canOfferLiftToVenueCount || this.answer.canOfferLiftToVenueCount <= 0)) {
-  //       return false;
-  //     }
-  //   }
-  //   if (typeof this.answer.isDrivingToCollege !== 'boolean') {
-  //     return false;
-  //   }
-  //   if (this.answer.isDrivingToCollege && !this.answer.carRegNumber) {
-  //     return false;
-  //   }
-  //   if (this.answer.isAccommodationBooked && !this.answer.postcode) {
-  //     return false;
-  //   }
-  //
-  //   return true;
-  // }
 }

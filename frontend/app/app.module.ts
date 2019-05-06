@@ -6,8 +6,10 @@ import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import { HomepageComponent } from './homepage/homepage.component';
 import { AttendingComponent } from './rsvp/attending/attending.component';
 import { ConfirmComponent } from './rsvp/confirm/confirm.component';
+import { DetailsComponent } from './rsvp/details/details.component';
 import { DietariesComponent } from './rsvp/dietaries/dietaries.component';
 import { DoneComponent } from './rsvp/done/done.component';
+import { SongComponent } from './rsvp/song/song.component';
 import { DayNightService } from './services/day-night.service';
 import { HttpClientModule } from '@angular/common/http';
 import { LogViewGuard } from './homepage/log-view.guard';
@@ -71,7 +73,9 @@ export function matchAllExceptEmptyUrl(segments: UrlSegment[], group: UrlSegment
     RsvpComponent,
     FindUserComponent,
     AttendingComponent,
+    DetailsComponent,
     DietariesComponent,
+    SongComponent,
     ConfirmComponent,
     DoneComponent,
 
