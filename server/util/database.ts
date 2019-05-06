@@ -1,83 +1,97 @@
-import { DynamoDB } from 'aws-sdk';
+import { Option } from '@angular/cli/models/interface';
+import { DynamoDB, AWSError } from 'aws-sdk';
 import uuid from 'uuid/v4';
 import DocumentClient = DynamoDB.DocumentClient;
 import WriteRequest = DocumentClient.WriteRequest;
 import { makeResponse } from './http-helpers';
 
-type Id = string | String | number; // Using "String" to be compatible with Phantom types which extend String
+type Id = string | String; // Using "String" to be compatible with Phantom types which extend String
 const docClient = new DocumentClient();
 
-type IdGenerator = () => Id;
+type IdGenerator<T> = (value: T) => Id;
 
-export class Table<T extends { id: Id }> {
+const uuidGenerator: IdGenerator<any> = () => uuid();
+
+export class Table<T extends { [id in PrimaryKeyName]: IdType }, PrimaryKeyName extends string = 'id', IdType extends Id = Id> {
+  protected readonly idField: string & PrimaryKeyName;
+
   constructor(
     protected readonly tableName: string,
-    protected readonly idGenerator: IdGenerator = uuid,
-  ) {}
+    protected readonly idGenerator: IdGenerator<T> = uuidGenerator,
+    idField: PrimaryKeyName | null = null,
+  ) {
+    this.idField = (idField === null ? 'id' : idField) as unknown as string & PrimaryKeyName;
+  }
 
   public all(): Promise<T[]> {
     return getAll(this.tableName);
   }
 
-  public find(id: Id): Promise<T | null> {
-    return get(this.tableName, '' + id, 'id');
+  public find(id: IdType): Promise<T | null> {
+    return get(this.tableName, '' + id, this.idField);
   }
 
-  public put(item: T): Promise<T> {
-    return put(this.tableName, item, 'id', this.idGenerator);
+  public put(item: OptionalPrimaryKey<T, PrimaryKeyName>): Promise<T> {
+    return put<T, PrimaryKeyName>(this.tableName, item, this.idField, this.idGenerator);
   }
 
-  public putMulti(items: T[]): Promise<T[]> {
-    return putMulti(this.tableName, items, 'id', this.idGenerator);
+  public putMulti(items: OptionalPrimaryKey<T, PrimaryKeyName>[]): Promise<T[]> {
+    return putMulti<T, PrimaryKeyName>(this.tableName, items, this.idField, this.idGenerator);
   }
 
-  public remove(id: Id): Promise<void> {
-    return remove(this.tableName, '' + id, 'id');
+  public remove(id: IdType): Promise<void> {
+    return remove(this.tableName, '' + id, this.idField);
   }
 }
 
-type LookupEntry<Lookup> = {
-  id: Id;
+type LookupEntry<Lookup, IdType extends Id = Id> = {
+  id: IdType;
   lookup: Lookup;
 }
 
-type LookupMap<Lookup> = {
-  id: '_all';
-  all: { [key: string]: LookupEntry<Lookup> } | { [key: number]: LookupEntry<Lookup> };
+type LookupMap<Lookup, PrimaryKeyName extends string, IdType extends Id = Id> = {
+  all: { [key: string]: LookupEntry<Lookup, IdType> };
+} & {
+  [id in PrimaryKeyName]: '_all'
 };
 
-export class LookupTable<T extends { id: Id }, Lookup = any> extends Table<T> {
+type OptionalPrimaryKey<T, PrimaryKeyName extends keyof T> =
+  Pick<T, Exclude<keyof T, PrimaryKeyName>> &
+  Partial<Pick<T, PrimaryKeyName>>;
+
+export class LookupTable<T extends { [id in PrimaryKeyName]: IdType }, Lookup = any, PrimaryKeyName extends string = 'id', IdType extends Id = Id> extends Table<T, PrimaryKeyName> {
   constructor(
     tableName: string,
     private readonly lookupGenerator: (value: T) => Lookup,
-    idGenerator: IdGenerator = uuid,
+    idGenerator: IdGenerator<T> = uuidGenerator,
+    idField: PrimaryKeyName | null = null,
   ) {
-    super(tableName, idGenerator);
+    super(tableName, idGenerator, idField);
   }
 
-  public async put(item: T): Promise<T> {
+  public async put(item: OptionalPrimaryKey<T, PrimaryKeyName>): Promise<T> {
     const insertedValue = await super.put(item);
     const lookup: LookupEntry<Lookup> = {
       lookup: this.lookupGenerator(insertedValue),
-      id: insertedValue.id
+      id: insertedValue[this.idField]
     };
 
     await this.addOrUpdateLookupEntries([lookup]);
     return insertedValue;
   }
 
-  public async putMulti(items: T[]): Promise<T[]> {
+  public async putMulti(items: OptionalPrimaryKey<T, PrimaryKeyName>[]): Promise<T[]> {
     const insertedValues = await super.putMulti(items);
     const lookups = insertedValues.map((value) => ({
       lookup: this.lookupGenerator(value),
-      id: value.id
+      id: value[this.idField]
     }));
 
     await this.addOrUpdateLookupEntries(lookups);
     return insertedValues;
   }
 
-  public async search(lookup: Partial<Lookup> | ((l: Lookup) => boolean)): Promise<T[]> {
+  public async search(lookup: Partial<Lookup> | ((l: Lookup, id: IdType) => boolean)): Promise<T[]> {
     const match = typeof lookup === 'function' ? lookup : (entry: Lookup) => {
       for (const key in lookup) {
         if (lookup.hasOwnProperty(key)) {
@@ -97,8 +111,9 @@ export class LookupTable<T extends { id: Id }, Lookup = any> extends Table<T> {
       if (!all.hasOwnProperty(entry)) {
         continue;
       }
-      if (match(all[entry].lookup)) {
-        results.push(this.find(all[entry].id));
+      const value = all[entry];
+      if (match(value.lookup, value.id as IdType)) {
+        results.push(this.find(value.id) as Promise<T>);
       }
     }
 
@@ -107,7 +122,7 @@ export class LookupTable<T extends { id: Id }, Lookup = any> extends Table<T> {
 
   public async all(): Promise<T[]> {
     const all = await super.all();
-    return all.filter((entry) => entry.id !== '_all');
+    return all.filter((entry) => entry[this.idField] !== '_all');
   }
 
   public async count(): Promise<number> {
@@ -128,12 +143,12 @@ export class LookupTable<T extends { id: Id }, Lookup = any> extends Table<T> {
     await super.put(newMap as any);
   }
 
-  private async getLookupMap(): Promise<LookupMap<Lookup>> {
-    const map = await this.find('_all') as any as LookupMap<Lookup>;
+  private async getLookupMap(): Promise<LookupMap<Lookup, PrimaryKeyName>> {
+    const map = await this.find('_all') as any as LookupMap<Lookup, PrimaryKeyName>;
     return map || {
-      id: '_all',
+      [this.idField]: '_all',
       all: {}
-    } as LookupMap<Lookup>;
+    } as LookupMap<Lookup, PrimaryKeyName>;
   }
 }
 
@@ -147,14 +162,14 @@ export function getAll<T>(tableName: string): Promise<T[]> {
 
     let allItems: T[] = [];
 
-    function onScan(err, data) {
+    function onScan(err: AWSError, data: DocumentClient.ScanOutput) {
       if (err) {
         console.error('Unable to scan the table. Error JSON:', JSON.stringify(err, null, 2));
         reject(err);
       } else {
         // print all the movies
         console.log('Scan succeeded.');
-        allItems = allItems.concat(data.Items);
+        allItems = allItems.concat(data.Items as T[]);
 
         // continue scanning if we have more movies, because
         // scan can retrieve a maximum of 1MB of data
@@ -170,8 +185,8 @@ export function getAll<T>(tableName: string): Promise<T[]> {
   });
 }
 
-export function put<T>(tableName: string, item: T, primaryKey: string = 'id', idGenerator: IdGenerator = uuid): Promise<T> {
-  item = ensureKey(item, primaryKey, idGenerator);
+export function put<T extends { [key in K]: string | String }, K extends string>(tableName: string, itemToInsert: OptionalPrimaryKey<T, K>, primaryKey: string = 'id', idGenerator: IdGenerator<T> = uuidGenerator): Promise<T> {
+  const item = ensureKey<T, K>(itemToInsert as unknown as T, primaryKey as K, idGenerator);
 
   return new Promise((resolve, reject) => {
     const itemToInsert: DocumentClient.PutItemInput = {
@@ -212,15 +227,15 @@ export function remove(tableName: string, key: string, primaryKeyName: string = 
   })
 }
 
-export function putMulti<T>(tableName: string, items: T[], primaryKey: string = 'id', idGenerator: IdGenerator = uuid): Promise<T[]> {
-  items = items.map((item) => ensureKey(item, primaryKey, idGenerator));
+export function putMulti<T extends { [key in K]: string | String }, K extends string>(tableName: string, itemsToInsert: OptionalPrimaryKey<T, K>[], primaryKey: string = 'id', idGenerator: IdGenerator<T> = uuidGenerator): Promise<T[]> {
+  const items: T[] = itemsToInsert.map((item) => ensureKey<T, K>(item as unknown as T, primaryKey as K, idGenerator));
 
   console.info('Inserting multi:', tableName);
   console.info(items);
 
   const count = 0;
 
-  const nextBatch = (insertedItems: T[] = []) => !items.length ?
+  const nextBatch = (insertedItems: T[] = []): Promise<T[]> | T[] => !items.length ?
     insertedItems :
     new Promise<T[]>((resolve, reject) => {
       if (count > 100) {
@@ -273,13 +288,13 @@ export function get<T>(tableName: string, key: string, primaryKeyName: string = 
   });
 }
 
-function ensureKey<T>(item: T, key: string, idGenerator: IdGenerator = uuid): T {
+function ensureKey<T extends { [key in K]: string | String }, K extends string>(item: T, key: K, idGenerator: IdGenerator<T> = uuidGenerator): T {
   if (item[key]) {
     return item;
   } else {
     return Object.assign({},
       item,
-      { [key]: idGenerator() }
+      { [key]: idGenerator(item) }
     );
   }
 }

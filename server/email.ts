@@ -1,3 +1,4 @@
+// @ts-ignore
 import * as ses from 'node-ses-any-promise';
 import { config } from '../config/config';
 

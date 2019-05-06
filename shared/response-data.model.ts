@@ -4,5 +4,5 @@ import { RsvpAnswer } from './rsvp-answer.model';
 export interface ResponseData {
   guest: Guest;
   group: Guest[];
-  rsvp?: RsvpAnswer;
+  rsvp: RsvpAnswer | null;
 }
