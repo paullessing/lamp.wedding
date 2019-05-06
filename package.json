@@ -15,7 +15,8 @@
     "build-static": "sls deploy -f serveStatic --angular=build",
     "deploy-static": "sls deploy -f serveStatic --angular",
     "test": "ng test",
-    "lint": "ng lint"
+    "lint": "ng lint",
+    "offline": "sls offline start"
   },
   "dependencies": {
     "@angular/animations": "^7.2.13",
@@ -60,6 +61,7 @@
     "protractor": "~5.3.0",
     "serverless-aws-static-file-handler": "^2.0.0",
     "serverless-domain-manager": "^3.2.1",
+    "serverless-dynamodb-local": "^0.2.37",
     "serverless-hooks-plugin": "^1.1.0",
     "serverless-offline": "^4.9.4",
     "serverless-s3-sync": "^1.5.1",
