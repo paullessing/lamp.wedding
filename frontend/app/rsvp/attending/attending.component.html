@@ -1,0 +1,85 @@
+<form
+  [formGroup]="form"
+  (submit)="onSubmit($event)"
+  [class.form-submitted]="submitted"
+>
+  <div class="form-group" *ngIf="otherGuests?.length">
+    <p>
+      Who are you RSVPing for?
+    </p>
+    <div class="ml-3">
+      <div class="form-check">
+        <label class="form-check-label">
+          <input
+            class="form-check-input"
+            type="checkbox"
+            checked
+            disabled
+          >
+          {{ guest | guestName }} (myself)
+        </label>
+      </div>
+
+      <div class="form-check" *ngFor="let guestControl of guestControls; index as i">
+        <label class="form-check-label">
+          <input
+            class="form-check-input"
+            type="checkbox"
+            [formControl]="guestControl"
+          >
+          {{ otherGuests[i] | guestName }}
+        </label>
+      </div>
+    </div>
+  </div>
+
+  <div class="form-group">
+    <label class="d-block">
+      Are you coming?
+    </label>
+    <div class="form-error" *ngIf="submitted && form.invalid && form.hasError('required', ['isAttending'])">
+      If you need more time, that's OK - just come back later. But we'll need a yes or no.
+    </div>
+    <div class="form-check form-check-inline">
+      <label class="form-check-label">
+        <input
+          class="form-check-input"
+          type="radio"
+          name="isAttending"
+          formControlName="isAttending"
+          [value]="true"
+        > {{ isMultiple ? 'We' : 'I' }} will be attending
+      </label>
+    </div>
+    <div class="form-check form-check-inline">
+      <label class="form-check-label">
+        <input
+          class="form-check-input"
+          type="radio"
+          name="isAttending"
+          formControlName="isAttending"
+          [value]="false"
+        > {{ isMultiple ? 'We' : 'I' }} cannot attend
+      </label>
+    </div>
+  </div>
+
+  <p class="text-error" *ngIf="form.value.isAttending === true && !isAll && !isWarningDismissed">
+    If some people cannot attend, please make sure they still RSVP "no" separately!
+    <button
+      class="btn btn-outline-dark"
+      style="cursor: pointer"
+      (click)="dismissWarning()"
+    >I understand</button>
+  </p>
+
+  <div class="row justify-content-end">
+    <div class="col-auto">
+      <button
+        type="submit"
+        class="btn btn-primary"
+        [disabled]="needsToShowWarning"
+      >Proceed</button>
+    </div>
+  </div>
+</form>

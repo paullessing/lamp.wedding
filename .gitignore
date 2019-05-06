@@ -93,6 +93,7 @@ testem.log
 
 # Serverless directories
 .serverless
+.dynamodb
 
 # Webpack directories
 .webpack
