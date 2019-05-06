@@ -1,9 +1,8 @@
-import { Option } from '@angular/cli/models/interface';
-import { DynamoDB, AWSError } from 'aws-sdk';
+import { AWSError, DynamoDB } from 'aws-sdk';
 import uuid from 'uuid/v4';
-import DocumentClient = DynamoDB.DocumentClient;
-import WriteRequest = DocumentClient.WriteRequest;
 import { makeResponse } from './http-helpers';
+import WriteRequest = DocumentClient.WriteRequest;
+import DocumentClient = DynamoDB.DocumentClient;
 
 type Id = string | String; // Using "String" to be compatible with Phantom types which extend String
 const docClient = new DocumentClient();
@@ -31,12 +30,12 @@ export class Table<T extends { [id in PrimaryKeyName]: IdType }, PrimaryKeyName 
     return get(this.tableName, '' + id, this.idField);
   }
 
-  public put(item: OptionalPrimaryKey<T, PrimaryKeyName>): Promise<T> {
-    return put<T, PrimaryKeyName>(this.tableName, item, this.idField, this.idGenerator);
+  public put<P extends T = T>(item: OptionalPrimaryKey<P, PrimaryKeyName>): Promise<P> {
+    return put<P, PrimaryKeyName>(this.tableName, item, this.idField, this.idGenerator);
   }
 
-  public putMulti(items: OptionalPrimaryKey<T, PrimaryKeyName>[]): Promise<T[]> {
-    return putMulti<T, PrimaryKeyName>(this.tableName, items, this.idField, this.idGenerator);
+  public putMulti<P extends T = T>(items: OptionalPrimaryKey<P, PrimaryKeyName>[]): Promise<P[]> {
+    return putMulti<P, PrimaryKeyName>(this.tableName, items, this.idField, this.idGenerator);
   }
 
   public remove(id: IdType): Promise<void> {
@@ -69,7 +68,7 @@ export class LookupTable<T extends { [id in PrimaryKeyName]: IdType }, Lookup = 
     super(tableName, idGenerator, idField);
   }
 
-  public async put(item: OptionalPrimaryKey<T, PrimaryKeyName>): Promise<T> {
+  public async put<P extends T = T>(item: OptionalPrimaryKey<P, PrimaryKeyName>): Promise<P> {
     const insertedValue = await super.put(item);
     const lookup: LookupEntry<Lookup> = {
       lookup: this.lookupGenerator(insertedValue),
@@ -80,7 +79,7 @@ export class LookupTable<T extends { [id in PrimaryKeyName]: IdType }, Lookup = 
     return insertedValue;
   }
 
-  public async putMulti(items: OptionalPrimaryKey<T, PrimaryKeyName>[]): Promise<T[]> {
+  public async putMulti<P extends T = T>(items: OptionalPrimaryKey<P, PrimaryKeyName>[]): Promise<P[]> {
     const insertedValues = await super.putMulti(items);
     const lookups = insertedValues.map((value) => ({
       lookup: this.lookupGenerator(value),

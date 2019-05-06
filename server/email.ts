@@ -1,6 +1,7 @@
 // @ts-ignore
 import * as ses from 'node-ses-any-promise';
 import { config } from '../config/config';
+import { Guest, RsvpAnswer } from '../shared';
 
 export interface SaveTheDateEmailData {
   names: string[];
@@ -54,3 +55,57 @@ export async function sendSaveTheDate3Email({ names, emails }: SaveTheDateEmailD
              `<a href="https://lamp.wedding?email=${encodeURIComponent(emails[0])}" align="center" class="float-center" style="Margin:0;border:0 solid #00304c;border-radius:3px;color:#fefefe;display:inline-block;font-family:Helvetica,Arial,sans-serif;font-size:20px;font-weight:700;line-height:1.3;margin:0;padding:10px 20px 10px 20px;padding-left:0;padding-right:0;text-align:center;text-decoration:none;width:100%">Click me to see the website!</a></center></td></tr></tbody></table></td><td class="expander" style="-moz-hyphens:auto;-webkit-hyphens:auto;Margin:0;border-collapse:collapse!important;color:#0a0a0a;font-family:Helvetica,Arial,sans-serif;font-size:16px;font-weight:400;hyphens:auto;line-height:1.3;margin:0;padding:0!important;text-align:left;vertical-align:top;visibility:hidden;width:0;word-wrap:break-word"></td></tr></tbody></table><table class="spacer" style="border-collapse:collapse;border-spacing:0;padding:0;text-align:left;vertical-align:top;width:100%"><tbody><tr style="padding:0;text-align:left;vertical-align:top"><td height="16px" style="-moz-hyphens:auto;-webkit-hyphens:auto;Margin:0;border-collapse:collapse!important;color:#0a0a0a;font-family:Helvetica,Arial,sans-serif;font-size:16px;font-weight:400;hyphens:auto;line-height:16px;margin:0;mso-line-height-rule:exactly;padding:0;text-align:left;vertical-align:top;word-wrap:break-word">&amp;nbsp;</td></tr></tbody></table><p style="Margin:0;Margin-bottom:10px;color:#0a0a0a;font-family:Helvetica,Arial,sans-serif;font-size:16px;font-weight:400;line-height:1.3;margin:0;margin-bottom:10px;padding:0;text-align:left">Love,</p><p style="Margin:0;Margin-bottom:10px;color:#0a0a0a;font-family:Helvetica,Arial,sans-serif;font-size:16px;font-weight:400;line-height:1.3;margin:0;margin-bottom:10px;padding:0;text-align:left">Lam and Paul</p><table class="spacer" style="border-collapse:collapse;border-spacing:0;padding:0;text-align:left;vertical-align:top;width:100%"><tbody><tr style="padding:0;text-align:left;vertical-align:top"><td height="32px" style="-moz-hyphens:auto;-webkit-hyphens:auto;Margin:0;border-collapse:collapse!important;color:#0a0a0a;font-family:Helvetica,Arial,sans-serif;font-size:32px;font-weight:400;hyphens:auto;line-height:32px;margin:0;mso-line-height-rule:exactly;padding:0;text-align:left;vertical-align:top;word-wrap:break-word">&amp;nbsp;</td></tr></tbody></table><hr><p style="Margin:0;Margin-bottom:10px;color:#0a0a0a;font-family:Helvetica,Arial,sans-serif;font-size:16px;font-weight:400;line-height:1.3;margin:0;margin-bottom:10px;padding:0;text-align:left"><small style="color:#8a8a8a;font-size:80%">PS: We will be unable to accommodate additional guests or children due to venue restrictions.<br>If your name is at the top of this email, you are one of the special people who are invited!</small></p></th><th class="expander" style="Margin:0;color:#0a0a0a;font-family:Helvetica,Arial,sans-serif;font-size:16px;font-weight:400;line-height:1.3;margin:0;padding:0!important;text-align:left;visibility:hidden;width:0"></th></tr></tbody></table></th></tr></tbody></table><table class="spacer" style="border-collapse:collapse;border-spacing:0;padding:0;text-align:left;vertical-align:top;width:100%"><tbody><tr style="padding:0;text-align:left;vertical-align:top"><td height="16px" style="-moz-hyphens:auto;-webkit-hyphens:auto;Margin:0;border-collapse:collapse!important;color:#0a0a0a;font-family:Helvetica,Arial,sans-serif;font-size:16px;font-weight:400;hyphens:auto;line-height:16px;margin:0;mso-line-height-rule:exactly;padding:0;text-align:left;vertical-align:top;word-wrap:break-word">&amp;nbsp;</td></tr></tbody></table></td></tr></tbody></table><table class="spacer float-center" style="Margin:0 auto;border-collapse:collapse;border-spacing:0;float:none;margin:0 auto;padding:0;text-align:center;vertical-align:top;width:100%"><tbody><tr style="padding:0;text-align:left;vertical-align:top"><td height="16px" style="-moz-hyphens:auto;-webkit-hyphens:auto;Margin:0;border-collapse:collapse!important;color:#0a0a0a;font-family:Helvetica,Arial,sans-serif;font-size:16px;font-weight:400;hyphens:auto;line-height:16px;margin:0;mso-line-height-rule:exactly;padding:0;text-align:left;vertical-align:top;word-wrap:break-word">&amp;nbsp;</td></tr></tbody></table></center></td></tr></tbody></table></body></html>`
   });
 };
+
+export async function sendConfirmationEmail(guest: Guest, answer: RsvpAnswer): Promise<void> {
+  if (!answer.email) {
+    return;
+  }
+
+  // const client = ses.createClient(config.sesConfig);
+
+  console.log('Sending Email', guest, answer);
+
+//   await client.sendEmail({
+//     to: answer.email,
+//     bcc: 'rsvp@mattandgeorgie.wedding',
+//     from: 'Wedding RSVP <rsvp@mattandgeorgie.wedding>',
+//     subject: `Response Received`,
+//     message: `
+//     <div style="font-size:24px; padding-bottom:16px; font-weight: bold;">
+//       Wedding RSVP for Matt And Georgie's Wedding, 26 May 2018
+//     </div>
+//     <div style="font-size:16px; padding-bottom:16px;">
+//       Dear ${ name(guest) },<br />
+//       Thanks for your response!
+//     </div>
+//     <div style="font-size:16px; padding-bottom:16px;">
+//       This is to confirm that we have received your answers.
+//       Please check the details below and let us know at <a href="mailto:rsvp@mattandgeorgie.wedding">rsvp@mattandgeorgie.wedding</a>
+//       if anything is wrong, or if there are any changes to these details.
+//     </div>
+//     ${ answer.guests.length > 1 ? `
+//     <div style="font-size:16px; padding-bottom:16px;">
+//       You are responding for:
+//       ${answer.guests.map((guest: Guest) => `
+//       <div>
+//         - ${ name(guest) }
+//       </div>`).join('')}
+//     </div>
+//     ` : ''}
+//     ${ answer.isAttending ? attending(answer, isFullGuest) : notAttending(answer) }
+//     <div style="font-size: 16px; padding-bottom: 16px;">
+//       If anything is wrong with this answer, please let us know by replying to this email.<br />
+//       If you need to update your answers, you can do so via the following link:
+//       <div style="text-align: center; padding-top: 16px; padding-bottom: 16px;" align="center">
+//         <a href="https://mattandgeorgie.wedding/rsvp/${ answer.guestId }?token=${ answer.token }">
+//           https://mattandgeorgie.wedding/rsvp/${ answer.guestId }?token=${ answer.token }
+//         </a>
+//       </div>
+//     </div>
+//     <div style="font-size: 16px;">
+//       Love,<br />
+//       Matt and Georgie
+//     </div>
+// `
+//   });
+}

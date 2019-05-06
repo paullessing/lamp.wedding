@@ -1,4 +1,5 @@
 import { Guest, GuestId } from './guest.model';
+import { PlaceholderRsvp } from './placeholder-rsvp.model';
 
 export type Dietaries = 'None' | 'Vegetarian' | 'Other';
 export type DietaryRequirements = Guest & {
@@ -17,4 +18,8 @@ export interface RsvpAnswer {
 
   songArtist: string;
   songTitle: string;
+}
+
+export function isFullRsvp(rsvp: RsvpAnswer | PlaceholderRsvp): rsvp is RsvpAnswer {
+  return rsvp.hasOwnProperty('isAttending') && typeof rsvp['isAttending'] === 'boolean';
 }

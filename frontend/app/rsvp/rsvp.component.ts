@@ -4,7 +4,7 @@ import { ActivatedRoute } from '@angular/router';
 import { Base64 } from 'js-base64';
 import { Guest } from '../../../shared/guest.model';
 import { ResponseData } from '../../../shared/response-data.model';
-import { RsvpAnswer } from '../../../shared/rsvp-answer.model';
+import { DietaryRequirements, RsvpAnswer } from '../../../shared/rsvp-answer.model';
 import { GuestService } from '../services/guest.service';
 import { AttendingAnswer } from './attending/attending.component';
 
@@ -37,12 +37,12 @@ import { AttendingAnswer } from './attending/attending.component';
 <!--        (submit)="onDetailsSubmitted($event)"-->
 <!--      ></app-rsvp-details>-->
 <!--      -->
-<!--      <app-rsvp-dietaries-->
-<!--        *ngIf="step === 'food'"-->
-<!--        [answer]="answer"-->
-<!--        (submit)="onDietariesSubmitted($event)"-->
-<!--      ></app-rsvp-dietaries>-->
-<!--      -->
+      <app-rsvp-dietaries
+        *ngIf="step === 'food'"
+        [answer]="answer"
+        (submit)="onDietariesSubmitted($event)"
+      ></app-rsvp-dietaries>
+      
 <!--      <app-rsvp-transport-->
 <!--        *ngIf="step === 'transport'"-->
 <!--        [answer]="answer"-->
@@ -56,16 +56,16 @@ import { AttendingAnswer } from './attending/attending.component';
 <!--        (submit)="onSongSubmitted($event)"-->
 <!--      ></app-rsvp-song>-->
 
-<!--      <app-rsvp-confirm-->
-<!--        *ngIf="step === 'confirm'"-->
-<!--        [error]="confirmationError"-->
-<!--        [answer]="answer"-->
-<!--        (submit)="onConfirm($event)"-->
-<!--      ></app-rsvp-confirm>-->
+      <app-rsvp-confirm
+        *ngIf="step === 'confirm'"
+        [error]="confirmationError"
+        [answer]="answer"
+        (submit)="onConfirm()"
+      ></app-rsvp-confirm>
 
-<!--      <app-rsvp-done-->
-<!--        *ngIf="step === 'done'"-->
-<!--      ></app-rsvp-done>-->
+      <app-rsvp-done
+        *ngIf="step === 'done'"
+      ></app-rsvp-done>
 
     </div>
     <div *ngIf="loading">Loading...</div>
@@ -199,14 +199,14 @@ export class RsvpComponent implements OnInit {
   //
   //   this.goToNextStep();
   // }
-  //
-  // public onDietariesSubmitted(data: DietaryRequirements[]): void {
-  //   this.answer.dietaries = data;
-  //   this.hasChanged = true;
-  //
-  //   this.goToNextStep();
-  // }
-  //
+
+  public onDietariesSubmitted(data: DietaryRequirements[]): void {
+    this.answer.dietaries = data;
+    this.hasChanged = true;
+
+    this.goToNextStep();
+  }
+
   // public onTransportSubmitted(data: TransportChoices): void {
   //   this.answer = {
   //     ...this.answer,
@@ -263,22 +263,27 @@ export class RsvpComponent implements OnInit {
 
   private getNextStep(): string | null {
     switch (this.step) {
-      // case 'attending':
-      //   return 'details';
+      case 'attending':
+        if (this.answer.isAttending) {
+          return 'food';
+        } else {
+          return 'confirm';
+        }
       // case 'details':
       //   if (this.answer.isAttending) {
       //     return this.guest.type === 'evening' ? 'transport' : 'food';
       //   } else {
       //     return 'confirm';
       //   }
-      // case 'food':
+      case 'food':
+        return 'confirm';
       //   return 'transport';
       // case 'transport':
       //   return 'song';
       // case 'song':
       //   return 'confirm';
-      // case 'confirm':
-      //   return 'done';
+      case 'confirm':
+        return 'done';
 
       default:
         return 'attending';
@@ -323,12 +328,12 @@ export class RsvpComponent implements OnInit {
     //   doGoToStep('details');
     //   return;
     // }
-    //
-    // if (isFullGuest && (step === 'food' || !this.answer.dietaries || !this.answer.dietaries.length)) {
-    //   doGoToStep('food');
-    //   return;
-    // }
-    //
+
+    if (step === 'food' || !this.answer.dietaries || !this.answer.dietaries.length) {
+      doGoToStep('food');
+      return;
+    }
+
     // if (step === 'food' && !isFullGuest || step === 'transport' || !this.isTransportComplete()) {
     //   doGoToStep('transport');
     //   return;
@@ -338,16 +343,16 @@ export class RsvpComponent implements OnInit {
     //   doGoToStep('song');
     //   return;
     // }
-    //
-    // if (step === 'confirm') {
-    //   doGoToStep('confirm');
-    //   return;
-    // }
-    //
-    // if (step === 'done') {
-    //   doGoToStep('done');
-    //   return;
-    // }
+
+    if (step === 'confirm') {
+      doGoToStep('confirm');
+      return;
+    }
+
+    if (step === 'done') {
+      doGoToStep('done');
+      return;
+    }
 
     doGoToStep('attending'); // Catch-all
   }

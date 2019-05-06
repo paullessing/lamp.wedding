@@ -1,0 +1,14 @@
+.confirm {
+  margin-bottom: 1rem;
+
+  &__title {
+    //color: rgba($navy, 0.7); // TODO
+    font-size: 0.9em;
+    line-height: 1.2;
+    margin-bottom: 0.25rem;
+  }
+
+  &__answer {
+    margin-bottom: 0.25rem;
+  }
+}
