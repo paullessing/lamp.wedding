@@ -1,15 +1,12 @@
 const path = require('path');
 const slsw = require('serverless-webpack');
-
-const entries = {};
-
-Object.keys(slsw.lib.entries).forEach(
-  key => (entries[key] = ['./source-map-install.js', slsw.lib.entries[key]])
-);
+const CopyWebpackPlugin = require('copy-webpack-plugin');
+const BuildAngularPlugin = require('./build-angular-plugin');
 
 module.exports = {
   mode: slsw.lib.webpack.isLocal ? 'development' : 'production',
-  entry: entries,
+  entry: slsw.lib.entries,
+  devtool: 'source-map',
   resolve: {
     extensions: [
       '.js',
@@ -19,6 +16,12 @@ module.exports = {
       '.tsx'
     ]
   },
+  plugins: [
+    // new CopyWebpackPlugin([
+    //   { from: 'dist/frontend', to: 'static' }
+    // ]),
+    new BuildAngularPlugin(slsw.lib)
+  ],
   output: {
     libraryTarget: 'commonjs',
     path: path.join(__dirname, '.webpack'),

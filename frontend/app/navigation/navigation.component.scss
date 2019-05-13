@@ -15,13 +15,17 @@
   right: 0;
   top: 0;
 
-  background-color: rgba(lighten(white, 6.6%), 0.9); // TODO colour
+  background-color: rgba($light-blue, 0.9);
   padding: 1rem 2rem;
   width: 100%;
 
   display: flex;
   justify-content: center;
   align-items: center;
+
+  a, a:hover {
+    box-shadow: none !important;
+  }
 
   &__content {
     max-width: 1024px;
@@ -35,7 +39,7 @@
     padding: 0;
 
     font-family: $font-family-header;
-    font-size: 1.2rem;
+    font-size: 1.5rem;
   }
 
   &__item {
@@ -44,8 +48,11 @@
   }
 
   &__link {
+    $color: $grey;
+
     text-decoration: none;
     position: relative;
+    color: $color;
 
     &:hover,
     &--active {
@@ -57,12 +64,12 @@
         right: 0;
         top: 100%;
         height: 1px;
-        background-color: blue; // TODO colour
+        background-color: $color;
       }
     }
 
     &:focus, &:active, &:hover {
-      color: inherit;
+      color: $color;
       text-decoration: none;
     }
   }

@@ -1,0 +1,87 @@
+<h2>Please check your response before you submit your RSVP:</h2>
+<section class="confirm" *ngIf="answer.guests.length > 1">
+  <p class="confirm__answer">You are confirming for:</p>
+  <ul class="confirm__answer">
+    <li *ngFor="let guest of answer.guests">
+      {{ guest | guestName }}
+    </li>
+  </ul>
+</section>
+
+<ng-container *ngIf="!answer.isAttending">
+  <p>Your answer: <b>{{ answer.guests.length > 1 ? 'We' : 'I' }} cannot come</b></p>
+
+<!--  <section *ngIf="answer.email || answer.phoneNumber" class="confirm">-->
+<!--    <label class="confirm__title">Contact Details</label>-->
+<!--    <p *ngIf="answer.email || answer.phoneNumber" class="confirm__answer">-->
+<!--      <span *ngIf="answer.email">-->
+<!--        Email: <b>{{ answer.email }}</b>-->
+<!--      </span>-->
+<!--      <br *ngIf="answer.email && answer.phoneNumber">-->
+<!--      <span *ngIf="answer.phoneNumber">-->
+<!--        Phone: <b>{{ answer.phoneNumber }}</b>-->
+<!--      </span>-->
+<!--    </p>-->
+<!--  </section>-->
+</ng-container>
+
+<ng-container *ngIf="answer.isAttending">
+  <p>Your answer: <b>{{ answer.guests.length > 1 ? 'We are' : 'I am' }} attending</b></p>
+
+<!--  <section class="confirm">-->
+<!--    <label class="confirm__title">Contact Details</label>-->
+<!--    <p class="confirm__answer">-->
+<!--      Email: <b>{{ answer.email }}</b>-->
+<!--      <br>-->
+<!--      Phone Number: <b>{{ answer.phoneNumber }}</b>-->
+<!--    </p>-->
+<!--  </section>-->
+
+  <section class="confirm">
+    <label class="confirm__title">Dietary Requirements</label>
+    <div class="confirm__answer" *ngIf="answer.dietaries.length === 1 && answer.dietaries[0] as guest">
+      <b>{{ guest.dietaries }}</b>
+      <div *ngIf="guest.dietaries === 'Other'">Notes: <b style="white-space: pre-line">{{ guest.dietaryNotes }}</b></div>
+    </div>
+    <ul class="confirm__answer" *ngIf="answer.dietaries.length > 1">
+      <li *ngFor="let guest of answer.dietaries">
+        {{ guest | guestName }}: <b>{{ guest.dietaries }}</b>
+        <div *ngIf="guest.dietaries === 'Other'">Notes: <b style="white-space: pre-line">{{ guest.dietaryNotes }}</b></div>
+      </li>
+    </ul>
+  </section>
+
+  <section>
+    <label class="confirm__title">Music</label>
+    <p class="confirm__answer">
+      {{ answer.guests.length > 1 ? 'We' : 'I' }} would like the following music played at the reception:
+      <b>{{ answer.songTitle }}</b> by <b>{{ answer.songArtist }}</b>
+    </p>
+  </section>
+</ng-container>
+
+<div class="form-error" *ngIf="error">
+  <ng-container *ngIf="error.status === 'already_confirmed'">
+    This RSVP has already been confirmed. Check your email!<br />If nothing has arrived, email us at
+    <a href="mailto:rsvp@lamp.wedding?subject=Website%20error%20code%20409" target="_blank">rsvp@lamp.wedding</a> and quote status code 409.
+  </ng-container>
+  <ng-container *ngIf="error.status === 'not_found'">
+    We haven't found your invite. Strange.<br />If you're sure this is correct, please email us at
+    <a href="mailto:rsvp@lamp.wedding?subject=Website%20error%20code%20404" target="_blank">rsvp@lamp.wedding</a> and quote status code 404.
+  </ng-container>
+  <ng-container *ngIf="error.status === 'unknown_error'">
+    Something has gone wrong, and it shouldn't have. Please email us at
+    <a href="mailto:rsvp@lamp.wedding?subject=Website%20error%20code%20500&body={{error.data}}" target="_blank">rsvp@lamp.wedding</a>
+    and give us the following piece of information if you can:
+    <code>{{ error.data }}</code>
+  </ng-container>
+</div>
+
+<div class="row justify-content-between mt-4">
+  <div class="col-auto">
+    <a class="btn btn-outline-dark" href="javascript:window.history.go(-1)">Back</a>
+  </div>
+  <div class="col-auto">
+    <button class="btn btn-primary" (click)="onSubmit()" [disabled]="completed">Yes, this is all correct</button>
+  </div>
+</div>

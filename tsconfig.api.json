@@ -6,7 +6,13 @@
       "es2015",
       "esnext"
     ],
-    "moduleResolution": "node"
+    "moduleResolution": "node",
+    "esModuleInterop": true,
+    "strict": true,
+    "typeRoots": [
+      "node_modules/@types",
+      "types"
+    ]
   },
   "exclude": [
     "node_modules",

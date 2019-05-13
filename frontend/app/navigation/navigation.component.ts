@@ -19,6 +19,9 @@ export const NAVIGATION_ITEMS: NavigationItem[] = [{
   name: 'Location',
   location: '/location'
 },{
+  name: 'Schedule',
+  location: '/schedule'
+},{
   name: 'Gifts',
   location: '/gifts'
 }];

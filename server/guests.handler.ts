@@ -1,10 +1,18 @@
-import { APIGatewayEvent, Context, ProxyResult } from 'aws-lambda';
-import * as parseCsv from 'csv-parse/lib/sync'
+import { APIGatewayEvent, APIGatewayProxyResult, Context, ProxyResult } from 'aws-lambda';
+import parseCsv from 'csv-parse/lib/sync'
+import { isPlaceholder, PlaceholderRsvp } from '../shared/placeholder-rsvp.model';
+import { ResponseData } from '../shared/response-data.model';
+import { RsvpAnswer } from '../shared/rsvp-answer.model';
+import { rsvpTable } from './db/rsvp.table';
 import { makeResponse } from './util/http-helpers';
-import { Guest } from '../shared/guest.model';
+import { Guest, GuestId, GuestLookup, NewGuest } from '../shared/guest.model';
 import { guestsTable } from './db/guests.table';
 import { ensureSecret } from './secret';
+import { isTruthy } from './util/util';
 
+/**
+ * Adds all guests from CSV to the database.
+ */
 export async function putAll(event: APIGatewayEvent, context: Context): Promise<ProxyResult> {
   ensureSecret(event);
 
@@ -43,7 +51,104 @@ export async function putAll(event: APIGatewayEvent, context: Context): Promise<
   });
 }
 
-function parseCsvInput(data: string, startIndex): Guest[] {
+/**
+ * Finds guests by partial name.
+ */
+export async function searchGuestByName(event: APIGatewayEvent): Promise<ProxyResult> {
+  const queryParams = event.queryStringParameters || {};
+  const firstName = normalise(queryParams.firstName);
+  const lastName = normalise(queryParams.lastName);
+
+  console.log('User is searching for: ', firstName, lastName);
+
+  const matchFirstName = firstName.length >= 2;
+  const matchLastName = lastName.length >= 2;
+
+  if (!matchFirstName || !matchLastName) {
+    return makeResponse(400, { error: 'First and Last Name must be at least two characters each' });
+  }
+
+  const guests: Guest[] = await guestsTable.search((value: GuestLookup) =>
+    value.firstName.indexOf(firstName) >= 0 && value.lastName.indexOf(lastName) >= 0
+  );
+
+  const matchedIds = guests.slice(0, 3).map((guest) => guest.id);
+  const results = await Promise.all(matchedIds.map((id) => guestsTable.find(id)));
+
+  return makeResponse(200, { results, count: results.length });
+}
+
+/**
+ * Retrieve a single guest.
+ */
+export async function getById(event: APIGatewayEvent, context: Context): Promise<ProxyResult> {
+  const guestId = GuestId.validate(event.pathParameters!.id);
+
+  const guest = await guestsTable.find(guestId);
+
+  if (guest) {
+    return makeResponse(200, { guest });
+  } else {
+    return makeResponse(404);
+  }
+}
+
+/**
+ * Retrieve a single guest's data.
+ */
+export async function getResponseData(event: APIGatewayEvent, context: Context): Promise<ProxyResult> {
+  const guestId = GuestId.validate(event.pathParameters!.id);
+  const token = event.queryStringParameters && event.queryStringParameters.token;
+
+  const guest = await guestsTable.find(guestId);
+
+  if (!guest) {
+    return makeResponse(404);
+  }
+
+  console.log('Got guest', guest);
+
+  let answer: RsvpAnswer | null = null;
+  const rsvpOrPlaceholder = await rsvpTable.find(guestId);
+  if (rsvpOrPlaceholder) {
+    if (isPlaceholder(rsvpOrPlaceholder)) {
+      return makeResponse(403, { respondedBy: rsvpOrPlaceholder.respondedBy.name });
+    }
+    if (rsvpOrPlaceholder.token !== token) {
+      return makeResponse(403);
+    }
+    answer = rsvpOrPlaceholder;
+  }
+
+  let group: Guest[] = [];
+  if (guest.groupId) {
+    group = (await Promise.all<Guest | null>(
+      (await guestsTable.search((lookup, id) => lookup.groupId === guest.groupId && id !== guest.id))
+        .map(async (lookupGuest: Guest): Promise<Guest | null> => {
+          console.log('Looked up guest', lookupGuest, answer);
+          if (answer && answer.guests.filter((answerGuest) => answerGuest.id === lookupGuest.id).length > 0) {
+            // This guest is already in the existing RSVP, so keep them
+            console.log('Keeping them');
+            return lookupGuest;
+          } else {
+            console.log('Checking if they have an RSVP');
+            // Ensure the guest doesn't already have an RSVP
+            return (await rsvpTable.find(lookupGuest.id)) ? null : lookupGuest;
+          }
+        })
+    )).filter(isTruthy);
+  }
+
+  const responseData: ResponseData = {
+    guest,
+    group,
+    rsvp: answer
+  };
+
+  return makeResponse(200, responseData);
+}
+
+function parseCsvInput(data: string, startIndex: number): NewGuest[] {
   const parsed = parseCsv(data);
   const firstNameIndex = parsed[0].indexOf('firstName');
   const lastNameIndex = parsed[0].indexOf('lastName');
@@ -64,26 +169,25 @@ function parseCsvInput(data: string, startIndex): Guest[] {
   }
 
   let index = startIndex;
-  return parsed.slice(1).map((row): Guest => {
-    const guest: Guest = {
-      id: null,
+  return parsed.slice(1).map((row: { [key: string] : string | null }): NewGuest => {
+    const guest: Partial<NewGuest> = {
       index: index++,
-      firstName: row[firstNameIndex],
+      firstName: row[firstNameIndex] as string,
     };
     if (typeof row[lastNameIndex] === 'string' && row[lastNameIndex]) {
-      guest.lastName = row[lastNameIndex];
+      guest.lastName = row[lastNameIndex]!;
     }
     if (typeof row[emailIndex] === 'string' && row[emailIndex]) {
-      guest.email = row[emailIndex];
+      guest.email = row[emailIndex]!;
     }
     if (typeof row[groupIndex] === 'string' && row[groupIndex]) {
-      guest.groupId = row[groupIndex];
+      guest.groupId = row[groupIndex]!;
     }
-    return guest;
+    return guest as NewGuest;
   });
 }
 
-function normalise(name: string) {
+function normalise(name: string | undefined) {
   return (name || '')
     .toLocaleLowerCase()
     .replace(/[^a-z0-9 _-]/gi, replaceCharacter);

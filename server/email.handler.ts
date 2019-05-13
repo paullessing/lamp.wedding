@@ -1,8 +1,14 @@
 import { APIGatewayEvent, Context, ProxyResult } from 'aws-lambda';
-import { SaveTheDateEmailData, sendSaveTheDateEmail, sendSaveTheDate2Email, sendSaveTheDate3Email } from './email';
+import { SaveTheDateEmailData, sendSaveTheDate2Email, sendSaveTheDate3Email, sendSaveTheDateEmail } from './email';
 import { ensureSecret } from './secret';
 import { guestsTable } from './db/guests.table';
-import { Guest, Uuid } from '../shared/guest.model';
+import { Guest, GuestId } from '../shared/guest.model';
+import { isTruthy } from './util/util';
+
+const getFilteredGuests = async (ids: GuestId[]): Promise<Guest[]> =>
+  (await guestsTable.all())
+    .sort((a: Guest, b: Guest) => a.index - b.index)
+    .filter((guest: Guest) => !ids.length || ids.indexOf(guest.id!) >= 0);
 
 export async function sendTest(event: APIGatewayEvent, context: Context): Promise<ProxyResult> {
   const body = await sendSaveTheDate3Email({
@@ -19,11 +25,9 @@ export async function sendTest(event: APIGatewayEvent, context: Context): Promis
 export async function sendSaveTheDate(event: APIGatewayEvent, context: Context): Promise<ProxyResult> {
   ensureSecret(event);
 
-  const ids = event.body && event.body.split('\n') || [];
+  const ids = event.body && event.body.split('\n').map(GuestId.validate) || [];
 
-  const guests = (await guestsTable.all())
-    .sort((a, b) => a.index - b.index)
-    .filter((guest) => !ids.length || ids.indexOf(guest.id) >= 0);
+  const guests = await getFilteredGuests(ids);
 
   const groups: Guest[][] = [];
   for (const guest of guests) {
@@ -42,7 +46,7 @@ export async function sendSaveTheDate(event: APIGatewayEvent, context: Context):
   const groupsWithoutEmails: Guest[][] = [];
 
   const emails: SaveTheDateEmailData[] = groups.map((group): SaveTheDateEmailData => ({
-    emails: group.map((guest) => guest.email).filter((email) => !!email),
+    emails: group.map((guest) => guest.email).filter(isTruthy),
     names: group.map((guest) => guest.firstName),
   })).filter((email, index) => {
     const noEmails = email.emails.length === 0;
@@ -96,13 +100,9 @@ ${notSentList}`;
 export async function sendSaveTheDate2(event: APIGatewayEvent, context: Context): Promise<ProxyResult> {
   ensureSecret(event);
 
-  const ids = event.body && event.body.split('\n') || [];
+  const ids = event.body && event.body.split('\n').map(GuestId.validate) || [];
 
-  const allGuests = await guestsTable.all();
-
-  const guests = allGuests
-    .sort((a, b) => a.index - b.index)
-    .filter((guest) => !ids.length || ids.indexOf(guest.id) >= 0);
+  const guests = await getFilteredGuests(ids);
 
   const groups: Guest[][] = [];
   for (const guest of guests) {
@@ -121,7 +121,7 @@ export async function sendSaveTheDate2(event: APIGatewayEvent, context: Context)
   const groupsWithoutEmails: Guest[][] = [];
 
   const emails: SaveTheDateEmailData[] = groups.map((group): SaveTheDateEmailData => ({
-    emails: group.map((guest) => guest.email).filter((email) => !!email),
+    emails: group.map((guest) => guest.email).filter(isTruthy),
     names: group.map((guest) => guest.firstName),
   })).filter((email, index) => {
     const noEmails = email.emails.length === 0;
@@ -175,7 +175,7 @@ ${notSentList}`;
 export async function sendSaveTheDate3(event: APIGatewayEvent, context: Context): Promise<ProxyResult> {
   ensureSecret(event);
 
-  const ids = event.body && event.body.split('\n') || [];
+  const ids = event.body && event.body.split('\n').map(GuestId.validate) || [];
   if (!ids.length) {
     return {
       statusCode: 204,
@@ -186,11 +186,7 @@ export async function sendSaveTheDate3(event: APIGatewayEvent, context: Context)
     }
   }
 
-  const allGuests = await guestsTable.all();
-
-  const guests = allGuests
-    .sort((a, b) => a.index - b.index)
-    .filter((guest) => !ids.length || ids.indexOf(guest.id) >= 0);
+  const guests = await getFilteredGuests(ids);
 
   const groups: Guest[][] = [];
   for (const guest of guests) {
@@ -209,7 +205,7 @@ export async function sendSaveTheDate3(event: APIGatewayEvent, context: Context)
   const groupsWithoutEmails: Guest[][] = [];
 
   const emails: SaveTheDateEmailData[] = groups.map((group): SaveTheDateEmailData => ({
-    emails: group.map((guest) => guest.email).filter((email) => !!email),
+    emails: group.map((guest) => guest.email).filter(isTruthy),
     names: group.map((guest) => guest.firstName),
   })).filter((email, index) => {
     const noEmails = email.emails.length === 0;

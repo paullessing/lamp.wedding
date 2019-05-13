@@ -2,18 +2,30 @@ service:
   name: lamp-wedding
 
 custom:
-#  hooks:
-#    before:package:createDeploymentArtifacts:
-#    - yarn run build-prod
-#  s3Sync:
-#  - bucketName: lamp.wedding
-#    localDir: dist/frontend
-#    acl: public-read
+  apiGateway:
+    binaryMediaTypes:
+      - image/png
+      - image/jpeg
+      - image/svg
+      - font/woff
+      - font/woff2
+      - font/ttf
+      - font/svg
+      - "*/*" # Using */* doesn't have side effects that I can tell. The HTML response works fine.
+  customDomain:
+    domainName: dev.lamp.wedding
+    certificateArn: arn:aws:acm:us-east-1:984077873871:certificate/b0189c40-fed4-474f-82fd-689a8290f2cf
+#    basePath: ''
+    stage: ${self:provider.stage}
+    createRoute53Record: false
+    endpointType: edge
 
 plugins:
-#  - serverless-hooks-plugin
-#  - serverless-s3-sync
+  - serverless-dynamodb-local
   - serverless-webpack
+  - serverless-aws-static-file-handler/plugins/BinaryMediaTypes
+  - serverless-domain-manager
+  - serverless-offline
 
 provider:
   name: aws
@@ -47,8 +59,58 @@ resources:
         ProvisionedThroughput:
           ReadCapacityUnits: 1
           WriteCapacityUnits: 1
+    rsvpTable:
+      Type: AWS::DynamoDB::Table
+      Properties:
+        TableName: lamp.wedding.rsvp
+        AttributeDefinitions:
+        - AttributeName: guestId
+          AttributeType: S
+        KeySchema:
+        - AttributeName: guestId
+          KeyType: HASH
+        ProvisionedThroughput:
+          ReadCapacityUnits: 1
+          WriteCapacityUnits: 1
 
 functions:
+  searchGuestByName:
+    handler: server.searchGuestByName
+    events:
+    - http:
+        path: api/guests/find
+        method: get
+  getGuest:
+    handler: server.getGuestById
+    events:
+    - http:
+        path: api/guests/{id}
+        method: get
+        request:
+          parameters:
+            paths:
+              id: true
+  getResponse:
+    handler: server.getResponseData
+    events:
+    - http:
+        path: api/guests/{id}/response
+        method: get
+        request:
+          parameters:
+            paths:
+              id: true
+  putRsvp:
+    handler: server.putRsvp
+    events:
+    - http:
+        path: api/guests/{id}/rsvp
+        method: put
+        cors: true
+        request:
+          parameters:
+            paths:
+              id: true
   putGuests:
     handler: server.guestsPutAll
     events:
@@ -87,3 +149,15 @@ functions:
     - http:
         method: post
         path: email/save-the-date-3
+  serveStatic:
+    handler: server.serveStatic
+    events:
+    - http:
+        method: get
+        path: /assets/{proxy+}
+    - http:
+        method: get
+        path: /
+    - http:
+        method: get
+        path: /{proxy+}

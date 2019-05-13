@@ -1,0 +1,97 @@
+<form
+  [formGroup]="form"
+  (submit)="onSubmit($event)"
+  [class.form-submitted]="submitted"
+>
+  <h2>Dietary Requirements</h2>
+  <div
+    class="form-group mb-4"
+    *ngFor="let guest of answer.guests; index as i"
+    [formGroup]="getGuestControl(i)"
+  >
+    <label class="d-block" *ngIf="answer.guests.length > 1">
+      <b>{{ guest | guestName }}</b>
+    </label>
+    <div>
+      <div class="form-error" *ngIf="submitted && form.invalid && form.hasError('required', ['guests', ''+i, 'dietaries'])">
+        Please select dietary requirements.
+      </div>
+      <div class="form-check form-check-inline d-block">
+        <label class="form-check-label">
+          <input
+            class="form-check-input"
+            type="radio"
+            [name]="'dietaries-' + i"
+            [formControl]="form.get(['guests', i, 'dietaries'])"
+            value="None"
+          > No requirements
+        </label>
+        <label class="form-check-label ml-3">
+          <input
+            class="form-check-input"
+            type="radio"
+            [name]="'dietaries-' + i"
+            [formControl]="form.get(['guests', i, 'dietaries'])"
+            value="Vegetarian"
+          > Vegetarian
+        </label>
+        <label class="form-check-label ml-3">
+          <input
+            class="form-check-input"
+            type="radio"
+            [name]="'dietaries-' + i"
+            [formControl]="form.get(['guests', i, 'dietaries'])"
+            value="Other"
+          > Other
+        </label>
+      </div>
+      <div *ngIf="!form.get(['guests', i, 'notes']).disabled; let disabled" [class.text-muted]="disabled">
+        <label [for]="'notes-' + i">
+          Special Requirements:
+        </label>
+        <div class="form-error" *ngIf="submitted && form.invalid && form.hasError('required', ['guests', i, 'notes'])">
+          Please tell us what your requirements are.
+        </div>
+        <textarea
+          class="form-control"
+          [id]="'notes-' + i"
+          [formControl]="form.get(['guests', i, 'notes'])"
+        ></textarea>
+      </div>
+    </div>
+    <!--<div-->
+      <!--class="form-check d-block pl-4"-->
+      <!--[class.text-muted]="form.value.requiresLiftToVenue !== false"-->
+    <!--&gt;-->
+      <!--<label-->
+        <!--class="form-check-label"-->
+      <!--&gt;-->
+        <!--<input-->
+          <!--class="form-check-input"-->
+          <!--type="checkbox"-->
+          <!--name="canOfferLiftToVenue"-->
+          <!--formControlName="canOfferLiftToVenue"-->
+          <!--[value]="false"-->
+        <!--&gt; I can offer a lift to the venue for up to:-->
+      <!--</label>-->
+      <!--<label>-->
+        <!--<input-->
+          <!--type="number"-->
+          <!--min="0"-->
+          <!--step="1"-->
+          <!--class="form-control form-control-sm d-inline lift-to-venue-count"-->
+          <!--formControlName="canOfferLiftToVenueCount"-->
+        <!--&gt; people-->
+      <!--</label>-->
+    <!--</div>-->
+  </div>
+
+  <div class="row justify-content-between">
+    <div class="col-auto">
+      <a class="btn btn-outline-dark" href="javascript:window.history.go(-1)">Back</a>
+    </div>
+    <div class="col-auto">
+      <button type="submit" class="btn btn-primary">Next</button>
+    </div>
+  </div>
+</form>

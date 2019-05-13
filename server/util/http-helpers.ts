@@ -5,7 +5,7 @@ export type ProxyHandler = (event: APIGatewayEvent, context: Context) => ProxyRe
 export function makeResponse(statusCode: number, body?: any, headers: { [header: string]: string } = {}): ProxyResult {
   return {
     statusCode,
-    body: (body !== null && typeof body !== 'undefined') ? JSON.stringify(body) : undefined,
+    body: (body !== null && typeof body !== 'undefined') ? JSON.stringify(body) : '',
     headers: {
       'Access-Control-Allow-Origin' : '*', // TODO scope
       ...headers

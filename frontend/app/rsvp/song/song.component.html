@@ -1,0 +1,51 @@
+<form
+  [formGroup]="form"
+  (submit)="onSubmit($event)"
+  [class.form-submitted]="submitted"
+>
+  <p>Please tell us a song you would like us to play at the wedding!</p>
+
+  <div class="row mb-4">
+    <div class="col-12 col-md-6">
+      <div class="form-group">
+        <label for="artist">Artist</label>
+        <div class="form-error" *ngIf="submitted && form.invalid && form.hasError('required', ['artist'])">
+          Please choose an artist.
+        </div>
+        <input
+          class="form-control"
+          type="text"
+          name="artist"
+          id="artist"
+          placeholder="Queen"
+          formControlName="artist"
+        />
+      </div>
+    </div>
+    <div class="col-12 col-md-6">
+      <div class="form-group">
+        <label for="title">Title</label>
+        <div class="form-error" *ngIf="submitted && form.invalid && form.hasError('required', ['title'])">
+          Please choose a song.
+        </div>
+        <input
+          class="form-control"
+          type="text"
+          name="title"
+          id="title"
+          placeholder="Don't Stop Me Now"
+          formControlName="title"
+        />
+      </div>
+    </div>
+  </div>
+
+  <div class="row justify-content-between">
+    <div class="col-auto">
+      <a class="btn btn-link" href="javascript:window.history.go(-1)">Back</a>
+    </div>
+    <div class="col-auto">
+      <button type="submit" class="btn btn-primary">Review my Answers</button>
+    </div>
+  </div>
+</form>
