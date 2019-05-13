@@ -6,9 +6,11 @@ custom:
     binaryMediaTypes:
       - image/png
       - image/jpeg
+      - image/svg
       - font/woff
       - font/woff2
       - font/ttf
+      - font/svg
       - "*/*" # Using */* doesn't have side effects that I can tell. The HTML response works fine.
   customDomain:
     domainName: dev.lamp.wedding
@@ -104,6 +106,7 @@ functions:
     - http:
         path: api/guests/{id}/rsvp
         method: put
+        cors: true
         request:
           parameters:
             paths:

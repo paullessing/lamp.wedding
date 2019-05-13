@@ -22,6 +22,7 @@ export {
   searchGuestByName,
   getGuestById,
   getResponseData,
+  putRsvp,
   logView,
   sendTestEmail,
   sendSaveTheDate,

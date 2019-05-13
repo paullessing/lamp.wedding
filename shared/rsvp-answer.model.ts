@@ -21,5 +21,5 @@ export interface RsvpAnswer {
 }
 
 export function isFullRsvp(rsvp: RsvpAnswer | PlaceholderRsvp): rsvp is RsvpAnswer {
-  return rsvp.hasOwnProperty('isAttending') && typeof rsvp['isAttending'] === 'boolean';
+  return rsvp.hasOwnProperty('isAttending') && typeof (rsvp as any)['isAttending'] === 'boolean';
 }

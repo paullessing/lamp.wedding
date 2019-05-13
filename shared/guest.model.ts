@@ -27,7 +27,7 @@ export interface Guest {
   id: GuestId;
   index: number;
   firstName: string;
-  lastName?: string;
+  lastName: string;
   email?: string;
   groupId?: string;
   viewedSaveTheDate?: DateString;

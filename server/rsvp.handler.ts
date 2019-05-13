@@ -16,18 +16,21 @@ export async function putRsvp(event: APIGatewayEvent, context: Context): Promise
     }
 
     if (!event.body) {
+      console.log('Error: No body');
       return makeResponse(400);
     }
 
     let rsvp: RsvpAnswer;
     try {
-      rsvp = JSON.parse(event.body);
+      console.log(typeof event.body, event.body);
+      rsvp = JSON.parse(new Buffer(event.body, 'base64').toString());
     } catch (e) {
+      console.log('Error parsing body:', e);
       return makeResponse(400);
     }
 
     const existingRsvp = await rsvpTable.find(guestId);
-    if (existingRsvp && (!isPlaceholder(existingRsvp) || isFullRsvp(existingRsvp) && rsvp.token !== existingRsvp.token)) {
+    if (existingRsvp && (isPlaceholder(existingRsvp) || isFullRsvp(existingRsvp) && rsvp.token !== existingRsvp.token)) {
       return makeResponse(409);
     }
 

@@ -277,7 +277,7 @@ export function get<T>(tableName: string, key: string, primaryKeyName: string = 
     };
 
     docClient.get(props, (error, item: DocumentClient.GetItemOutput) => {
-      console.log('Finished inserting' + (error ? ' with error' : ''), error);
+      console.log('Finished getting' + (error ? ' with error' : ''), error || '');
       if (error) {
         reject(error);
       } else {
