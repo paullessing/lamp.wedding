@@ -21,6 +21,7 @@ import { RsvpComponent } from './rsvp/rsvp.component';
 import { SongComponent } from './rsvp/song/song.component';
 import { ScheduleComponent } from './schedule/schedule.component';
 import { DayNightService } from './services/day-night.service';
+import { GiftsComponent } from './gifts/gifts.component';
 
 export function matchAllExceptEmptyUrl(segments: UrlSegment[], group: UrlSegmentGroup, route: Route): UrlMatchResult | null {
   // Matches anything except the empty URL
@@ -55,6 +56,10 @@ export function matchAllExceptEmptyUrl(segments: UrlSegment[], group: UrlSegment
           path: 'schedule',
           component: ScheduleComponent
         },
+        {
+          path: 'gifts',
+          component: GiftsComponent
+        },
       ]
     },
     {
@@ -78,8 +83,10 @@ export function matchAllExceptEmptyUrl(segments: UrlSegment[], group: UrlSegment
     SongComponent,
     ConfirmComponent,
     DoneComponent,
+    GiftsComponent,
 
     GuestNamePipe,
+
   ],
   providers: [
     DayNightService,

@@ -1,7 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { Router } from '@angular/router';
-import { Guest, GuestId } from '../../../../shared/guest.model';
+import { Guest, GuestId } from '../../../../shared';
 import { GuestService } from '../../services/guest.service';
 
 @Component({
