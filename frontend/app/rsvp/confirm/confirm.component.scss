@@ -1,9 +1,18 @@
+@import "../../../styles/config/all";
+
+.title {
+  font-family: $font-family-base;
+  font-size: 1.4rem;
+  font-weight: bold;
+  margin-bottom: 1rem;
+}
+
 .confirm {
   margin-bottom: 1rem;
 
   &__title {
-    //color: rgba($navy, 0.7); // TODO
-    font-size: 0.9em;
+    font-size: 1.2em;
+    font-family: $font-family-header;
     line-height: 1.2;
     margin-bottom: 0.25rem;
   }

@@ -12,6 +12,7 @@ import { Song } from './song/song.component';
 
 @Component({
   selector: 'app-rsvp',
+  styleUrls: ['./rsvp.component.scss'],
 
   // TODO: This whole step business should be routing
   template: `

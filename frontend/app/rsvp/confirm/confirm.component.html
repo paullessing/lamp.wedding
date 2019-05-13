@@ -1,6 +1,6 @@
-<h2>Please check your response before you submit your RSVP:</h2>
+<h2 class="title">Please check your response before you submit your RSVP!</h2>
 <section class="confirm" *ngIf="answer.guests.length > 1">
-  <p class="confirm__answer">You are confirming for:</p>
+  <label class="confirm__title">Guests</label>
   <ul class="confirm__answer">
     <li *ngFor="let guest of answer.guests">
       {{ guest | guestName }}
@@ -11,31 +11,31 @@
 <ng-container *ngIf="!answer.isAttending">
   <p>Your answer: <b>{{ answer.guests.length > 1 ? 'We' : 'I' }} cannot come</b></p>
 
-<!--  <section *ngIf="answer.email || answer.phoneNumber" class="confirm">-->
-<!--    <label class="confirm__title">Contact Details</label>-->
-<!--    <p *ngIf="answer.email || answer.phoneNumber" class="confirm__answer">-->
-<!--      <span *ngIf="answer.email">-->
-<!--        Email: <b>{{ answer.email }}</b>-->
-<!--      </span>-->
-<!--      <br *ngIf="answer.email && answer.phoneNumber">-->
-<!--      <span *ngIf="answer.phoneNumber">-->
-<!--        Phone: <b>{{ answer.phoneNumber }}</b>-->
-<!--      </span>-->
-<!--    </p>-->
-<!--  </section>-->
+  <section *ngIf="answer.email || answer.phoneNumber" class="confirm">
+    <label class="confirm__title">Contact Details</label>
+    <p *ngIf="answer.email || answer.phoneNumber" class="confirm__answer">
+      <span *ngIf="answer.email">
+        Email: <b>{{ answer.email }}</b>
+      </span>
+      <br *ngIf="answer.email && answer.phoneNumber">
+      <span *ngIf="answer.phoneNumber">
+        Phone: <b>{{ answer.phoneNumber }}</b>
+      </span>
+    </p>
+  </section>
 </ng-container>
 
 <ng-container *ngIf="answer.isAttending">
   <p>Your answer: <b>{{ answer.guests.length > 1 ? 'We are' : 'I am' }} attending</b></p>
 
-<!--  <section class="confirm">-->
-<!--    <label class="confirm__title">Contact Details</label>-->
-<!--    <p class="confirm__answer">-->
-<!--      Email: <b>{{ answer.email }}</b>-->
-<!--      <br>-->
-<!--      Phone Number: <b>{{ answer.phoneNumber }}</b>-->
-<!--    </p>-->
-<!--  </section>-->
+  <section class="confirm">
+    <label class="confirm__title">Contact Details</label>
+    <p class="confirm__answer">
+      Email: <b>{{ answer.email }}</b>
+      <br>
+      Phone Number: <b>{{ answer.phoneNumber }}</b>
+    </p>
+  </section>
 
   <section class="confirm">
     <label class="confirm__title">Dietary Requirements</label>

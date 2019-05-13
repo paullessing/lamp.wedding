@@ -48,9 +48,7 @@
   </fieldset>
   <button
     *ngIf="!loading && !results"
-    class="btn"
-    [class.btn-primary]="!results"
-    [class.btn-secondary]="results"
+    class="btn btn-light"
     type="submit"
   >Find my Invitation</button>
   <div *ngIf="loading">Loading...</div><!-- TODO add spinner -->
@@ -72,7 +70,7 @@
 
     <button
       type="button"
-      class="btn btn-primary"
+      class="btn btn-outline-light"
       (click)="restart()"
     >Search Again</button>
   </ng-container>
