@@ -42,6 +42,11 @@
     font-size: 1.5rem;
   }
 
+  &__home {
+    height: 2.5rem;
+    margin: -0.5rem 0;
+  }
+
   &__item {
     display: inline-block;
     margin: 0 1rem;
@@ -71,6 +76,14 @@
     &:focus, &:active, &:hover {
       color: $color;
       text-decoration: none;
+    }
+
+    &--home {
+      padding: 0 1rem;
+
+      &::after {
+        display: none !important;
+      }
     }
   }
 

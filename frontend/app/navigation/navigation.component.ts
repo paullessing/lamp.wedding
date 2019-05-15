@@ -10,9 +10,6 @@ export interface NavigationItem {
 };
 
 export const NAVIGATION_ITEMS: NavigationItem[] = [{
-  icon: 'home',
-  location: '/'
-},{
   name: 'RSVP',
   location: '/rsvp'
 },{
