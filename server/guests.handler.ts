@@ -23,7 +23,7 @@ export async function putAll(event: APIGatewayEvent, context: Context): Promise<
 
   const existingGuests = await guestsTable.all();
 
-  const guests = parseCsvInput(event.body, existingGuests.length);
+  const guests = parseCsvInput(new Buffer(event.body, 'base64').toString(), existingGuests.length);
   if (!guests || !guests.length) {
     console.warn(`No data: ${event.body}`);
     throw makeResponse(400, 'Bad Request');
@@ -149,6 +149,7 @@ export async function getResponseData(event: APIGatewayEvent, context: Context):
 }
 
 function parseCsvInput(data: string, startIndex: number): NewGuest[] {
+  console.log('data', data);
   const parsed = parseCsv(data);
   const firstNameIndex = parsed[0].indexOf('firstName');
   const lastNameIndex = parsed[0].indexOf('lastName');

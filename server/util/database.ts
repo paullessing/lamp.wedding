@@ -139,15 +139,23 @@ export class LookupTable<T extends { [id in PrimaryKeyName]: IdType }, Lookup = 
       const id = typeof lookup.id === 'number' ? lookup.id : lookup.id as string;
       newMap.all[id] = lookup;
     }
-    await super.put(newMap as any);
+    console.log('Putting map', JSON.stringify(newMap, null, '  '));
+    await super.put({ ...newMap, all: JSON.stringify(newMap.all) } as any);
   }
 
   private async getLookupMap(): Promise<LookupMap<Lookup, PrimaryKeyName>> {
-    const map = await this.find('_all') as any as LookupMap<Lookup, PrimaryKeyName>;
-    return map || {
-      [this.idField]: '_all',
-      all: {}
-    } as LookupMap<Lookup, PrimaryKeyName>;
+    const map = await this.find('_all') as any;
+    if (!map) {
+      return {
+        [this.idField]: '_all',
+        all: {}
+      } as LookupMap<Lookup, PrimaryKeyName>;
+    } else {
+      return {
+        ...map,
+        all: JSON.parse(map.all),
+      }
+    }
   }
 }
 

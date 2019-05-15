@@ -12,19 +12,19 @@ custom:
       - font/ttf
       - font/svg
       - "*/*" # Using */* doesn't have side effects that I can tell. The HTML response works fine.
-  customDomain:
-    domainName: dev.lamp.wedding
-    certificateArn: arn:aws:acm:us-east-1:984077873871:certificate/b0189c40-fed4-474f-82fd-689a8290f2cf
-#    basePath: ''
-    stage: ${self:provider.stage}
-    createRoute53Record: false
-    endpointType: edge
+#  customDomain:
+#    domainName: lamp.wedding
+#    certificateArn: arn:aws:acm:us-east-1:984077873871:certificate/b0189c40-fed4-474f-82fd-689a8290f2cf
+##    basePath: ''
+#    stage: ${self:provider.stage}
+#    createRoute53Record: false
+#    endpointType: edge
 
 plugins:
   - serverless-dynamodb-local
   - serverless-webpack
   - serverless-aws-static-file-handler/plugins/BinaryMediaTypes
-  - serverless-domain-manager
+#  - serverless-domain-manager
   - serverless-offline
 
 provider:
@@ -80,12 +80,14 @@ functions:
     - http:
         path: api/guests/find
         method: get
+        cors: true
   getGuest:
     handler: server.getGuestById
     events:
     - http:
         path: api/guests/{id}
         method: get
+        cors: true
         request:
           parameters:
             paths:
@@ -96,6 +98,7 @@ functions:
     - http:
         path: api/guests/{id}/response
         method: get
+        cors: true
         request:
           parameters:
             paths:
