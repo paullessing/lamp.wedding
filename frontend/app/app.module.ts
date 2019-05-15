@@ -7,6 +7,7 @@ import { Route, RouterModule, UrlMatchResult, UrlSegment, UrlSegmentGroup } from
 import { AppComponent } from './app.component';
 import { DefaultPageComponent } from './default-page/default-page.component';
 import { GuestNamePipe } from './guest-name.pipe';
+import { EnsureNightGuard } from './homepage/ensure-night.guard';
 import { HomepageComponent } from './homepage/homepage.component';
 import { LogViewGuard } from './homepage/log-view.guard';
 import { LocationComponent } from './location/location.component';
@@ -23,11 +24,6 @@ import { ScheduleComponent } from './schedule/schedule.component';
 import { DayNightService } from './services/day-night.service';
 import { GiftsComponent } from './gifts/gifts.component';
 
-export function matchAllExceptEmptyUrl(segments: UrlSegment[], group: UrlSegmentGroup, route: Route): UrlMatchResult | null {
-  // Matches anything except the empty URL
-  return segments.length >= 1 ? { consumed: [] } : null
-}
-
 @NgModule({
   imports: [
     BrowserModule,
@@ -37,7 +33,7 @@ export function matchAllExceptEmptyUrl(segments: UrlSegment[], group: UrlSegment
 
     HttpClientModule,
     RouterModule.forRoot([{
-      matcher: matchAllExceptEmptyUrl,
+      path: '',
       component: DefaultPageComponent,
       children: [
         {
@@ -60,12 +56,12 @@ export function matchAllExceptEmptyUrl(segments: UrlSegment[], group: UrlSegment
           path: 'gifts',
           component: GiftsComponent
         },
+        {
+          path: '**',
+          component: HomepageComponent,
+          canDeactivate: [EnsureNightGuard],
+        },
       ]
-    },
-    {
-      path: '**',
-      canActivate: [LogViewGuard],
-      component: HomepageComponent
     }])
   ],
   declarations: [

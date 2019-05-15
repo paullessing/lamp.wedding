@@ -16,12 +16,11 @@ export class DayNightService {
   private _state$: BehaviorSubject<DayOrNight>;
 
   constructor() {
-    this._state$ = new BehaviorSubject<DayOrNight>('day');
+    this._state$ = new BehaviorSubject<DayOrNight>('night');
   }
 
   public toggle(): void {
     const value = this._state$.getValue();
-    console.log('toggling');
     this._state$.next(value === 'day' ? 'night' : 'day');
   }
 }

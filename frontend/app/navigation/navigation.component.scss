@@ -17,6 +17,9 @@
 
   background-color: rgba($light-blue, 0.9);
   padding: 1rem 2rem;
+  @media screen and (max-width: 540px) {
+    padding: 1rem;
+  }
   width: 100%;
 
   display: flex;
@@ -50,6 +53,10 @@
   &__item {
     display: inline-block;
     margin: 0 1rem;
+
+    @media screen and (max-width: 540px) {
+      margin: 0 0.5rem;
+    }
   }
 
   &__link {

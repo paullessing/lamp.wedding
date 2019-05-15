@@ -1,5 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import { animate, group, query, state, style, transition, trigger } from '@angular/animations';
+import { Observable } from 'rxjs';
+import { DayNightService, DayOrNight } from '../services/day-night.service';
 
 @Component({
   selector: 'app-homepage',
@@ -67,14 +69,18 @@ export class HomepageComponent implements OnInit {
 
   public animationState: 'day' | 'night' | 'title' | 'details';
   public showSignoff = false;
+  public dayNight$: Observable<DayOrNight>;
 
   constructor(
+    private dayNightService: DayNightService,
   ) {
     this.animationState = 'day';
   }
 
   public ngOnInit(): void {
     setTimeout(() => this.start(), 2000);
+
+    this.dayNight$ = this.dayNightService.state$;
   }
 
   public start(): void {
@@ -85,5 +91,9 @@ export class HomepageComponent implements OnInit {
     setTimeout(() => this.animationState = 'title', 3500);
     setTimeout(() => this.animationState = 'details', 6500);
     setTimeout(() => this.showSignoff = true, 5000);
+  }
+
+  public toggleDay(): void {
+    this.dayNightService.toggle();
   }
 }

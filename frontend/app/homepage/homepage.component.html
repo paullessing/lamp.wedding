@@ -1,14 +1,24 @@
+<div class="title">
+  <div
+    class="lighthouse title__lighthouse"
+    [class.lighthouse--day]="(dayNight$ | async) === 'day'"
+    (click)="toggleDay()"
+  ></div>
+  <div class="title__text">
+    <h1 style="font-size: 1.6em">
+      I <i class="icon-heart"><span class="text-hide">&hearts;</span></i> LamP
+    </h1>
+    <h2 style="font-size: 1.2em">Lam & Paul</h2>
+    <h3 style="font-size: 1em">24 August 2019</h3>
+  </div>
+</div>
+
+
 <div
+  *ngIf="false"
   class="homepage"
   [class.homepage--night]="animationState !== 'day'"
 >
-  <!--<div style="position:fixed; left: 0; top: 0; z-index: 1000">-->
-    <!--<button (click)="animationState='day'">Day</button>-->
-    <!--<button (click)="animationState='night'">Night</button>-->
-    <!--<button (click)="animationState='title'">Title</button>-->
-    <!--<button (click)="animationState='details'">Details</button>-->
-    <!--<div style="display: inline-block; background-color: white">{{ animationState }}</div>-->
-  <!--</div>-->
   <div class="homepage__container">
     <div
       (click)="start()"
