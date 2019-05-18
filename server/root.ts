@@ -6,6 +6,7 @@ import { createRequestHandler } from './util/http-helpers';
 import * as views from './views.handler';
 
 const guestsPutAll = createRequestHandler(guests.putAll);
+const guestsPutSingle = createRequestHandler(guests.updateGuest);
 const searchGuestByName = createRequestHandler(guests.searchGuestByName);
 const getGuestById = createRequestHandler(guests.getById);
 const getResponseData = createRequestHandler(guests.getResponseData);
@@ -19,6 +20,7 @@ const sendSaveTheDate3 = createRequestHandler(email.sendSaveTheDate3);
 
 export {
   guestsPutAll,
+  guestsPutSingle,
   searchGuestByName,
   getGuestById,
   getResponseData,

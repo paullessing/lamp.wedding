@@ -51,6 +51,52 @@ export async function putAll(event: APIGatewayEvent, context: Context): Promise<
   });
 }
 
+export async function updateGuest(event: APIGatewayEvent): Promise<ProxyResult> {
+  ensureSecret(event);
+
+  if (!event.body) {
+    console.warn(`Body not supplied`);
+    throw makeResponse(400, 'Missing body');
+  }
+
+  let guest: Guest | null = null;
+  try {
+    guest = JSON.parse(new Buffer(event.body, 'base64').toString());
+  } catch (e) {
+    console.log(e);
+    throw makeResponse(400, 'Could not parse body');
+  }
+
+  if (!guest) {
+    throw makeResponse(422, 'Missing body');
+  }
+
+  const id = event.pathParameters!.id;
+  if (!id) {
+    throw makeResponse(422, 'Missing ID');
+  }
+
+  const oldGuest = await guestsTable.find(id);
+  if (!oldGuest) {
+    throw makeResponse(422, `Could not find guest with ID: '${id}'`);
+  }
+
+  const updatedGuest: Guest = {
+    ...oldGuest,
+    email: guest.email || oldGuest.email,
+    firstName: guest.firstName || oldGuest.firstName,
+    lastName: guest.lastName || oldGuest.lastName,
+    groupId: typeof guest.groupId === 'string' ? guest.groupId : oldGuest.groupId,
+  };
+
+  await guestsTable.put(updatedGuest);
+
+  return makeResponse(200, {
+    previous: oldGuest,
+    current: updatedGuest
+  });
+}
+
 /**
  * Finds guests by partial name.
  */

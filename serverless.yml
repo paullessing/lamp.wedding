@@ -121,6 +121,12 @@ functions:
         cors: true
         method: put
         path: guests
+  updateSingleGuest:
+    handler: server.guestsPutSingle
+    events:
+    - http:
+        method: put
+        path: guests/{id}
   logView:
     handler: server.logView
     events:
