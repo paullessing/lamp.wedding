@@ -11,6 +11,7 @@ const searchGuestByName = createRequestHandler(guests.searchGuestByName);
 const getGuestById = createRequestHandler(guests.getById);
 const getResponseData = createRequestHandler(guests.getResponseData);
 const putRsvp = createRequestHandler(rsvp.putRsvp);
+const getAllResponses = createRequestHandler(rsvp.getAllResponses);
 
 const logView = createRequestHandler(views.logView);
 const sendTestEmail = createRequestHandler(email.sendTest);
@@ -25,6 +26,7 @@ export {
   getGuestById,
   getResponseData,
   putRsvp,
+  getAllResponses,
   logView,
   sendTestEmail,
   sendSaveTheDate,

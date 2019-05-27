@@ -114,6 +114,12 @@ functions:
           parameters:
             paths:
               id: true
+  getAllResponses:
+    handler: server.getAllResponses
+    events:
+    - http:
+        path: api/response/all
+        method: get
   putGuests:
     handler: server.guestsPutAll
     events:
