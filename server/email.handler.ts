@@ -302,47 +302,41 @@ export async function sendRsvpReminders(event: APIGatewayEvent, context: Context
     `${guest.firstName}${guest.lastName ? ' ' + guest.lastName : ''}`
   ).join(' and ')).join('\n');
 
+  console.log('Sending to:', emails);
+
+  const results = await Promise.all(emails.map((email) => {
+    return sendReminderEmail(email).then(() => ({
+      success: true,
+      names: email.names.join(' and '),
+      emails: email.emails.join(', ')
+    })).catch((e) => {
+      console.log('Failed to send: ' + email.emails.join(', '), e);
+      return {
+        success: false,
+        names: email.names.join(' and '),
+        emails: email.emails.join(', ')
+      };
+    });
+  }));
+
+  const successes = results.filter((result) => result.success).map((success) => `${success.names} (${success.emails})`);
+  const failures = results.filter((result) => !result.success).map((success) => `${success.names} (${success.emails})`);
+
+  const result =
+    `Successfully sent ${successes.length} emails:
+${successes.join('\n')}
+
+Failed to send ${failures.length} emails:
+${failures.join('\n')}
+
+The following recipients had no email attached:
+${notSentList}`;
+
   return {
-    statusCode: 200,
-    body: JSON.stringify(emails),
+    statusCode: failures.length ? 500 : 200,
+    body: result,
     headers: {
-      'Content-Type': 'application/json'
+      'Content-Type': 'text/plain'
     }
   };
-//
-//   const results = await Promise.all(emails.map((email) => {
-//     return sendReminderEmail(email).then(() => ({
-//       success: true,
-//       names: email.names.join(' and '),
-//       emails: email.emails.join(', ')
-//     })).catch((e) => {
-//       console.log('Failed to send: ' + email.emails.join(', '), e);
-//       return {
-//         success: false,
-//         names: email.names.join(' and '),
-//         emails: email.emails.join(', ')
-//       };
-//     });
-//   }));
-//
-//   const successes = results.filter((result) => result.success).map((success) => `${success.names} (${success.emails})`);
-//   const failures = results.filter((result) => !result.success).map((success) => `${success.names} (${success.emails})`);
-//
-//   const result =
-//     `Successfully sent ${successes.length} emails:
-// ${successes.join('\n')}
-//
-// Failed to send ${failures.length} emails:
-// ${failures.join('\n')}
-//
-// The following recipients had no email attached:
-// ${notSentList}`;
-//
-//   return {
-//     statusCode: failures.length ? 500 : 200,
-//     body: result,
-//     headers: {
-//       'Content-Type': 'text/plain'
-//     }
-//   };
 }
