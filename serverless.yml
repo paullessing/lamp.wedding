@@ -164,6 +164,12 @@ functions:
     - http:
         method: post
         path: email/save-the-date-3
+  sendRsvpReminders:
+    handler: server.sendRsvpReminders
+    events:
+      - http:
+          method: post
+          path: email/send-rsvp-reminder
   serveStatic:
     handler: server.serveStatic
     events:

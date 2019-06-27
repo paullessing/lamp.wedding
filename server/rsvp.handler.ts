@@ -134,6 +134,7 @@ export async function getAllResponses(event: APIGatewayEvent, context: Context):
     firstName: guest.firstName,
     lastName: guest.lastName,
     groupId: guest.groupId,
+    email: guest.email,
   }));
 
   const keys = [
