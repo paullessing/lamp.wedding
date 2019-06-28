@@ -237,6 +237,7 @@ function parseCsvInput(data: string, startIndex: number): NewGuest[] {
 function normalise(name: string | undefined) {
   return (name || '')
     .toLocaleLowerCase()
+    .trim()
     .replace(/[^a-z0-9 _-]/gi, replaceCharacter);
 }
 
