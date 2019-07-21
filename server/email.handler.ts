@@ -1,17 +1,19 @@
 import { APIGatewayEvent, Context, ProxyResult } from 'aws-lambda';
+import { isFullRsvp } from '../shared';
+import { Guest, GuestId } from '../shared/guest.model';
+import { guestsTable } from './db/guests.table';
+import { rsvpTable } from './db/rsvp.table';
 import {
   ReminderEmailData,
   SaveTheDateEmailData,
+  sendOneMonthEmail,
   sendReminderEmail,
   sendSaveTheDate2Email,
   sendSaveTheDate3Email,
   sendSaveTheDateEmail
 } from './email';
 import { ensureSecret } from './secret';
-import { guestsTable } from './db/guests.table';
-import { Guest, GuestId } from '../shared/guest.model';
 import { isTruthy } from './util/util';
-import { rsvpTable } from './db/rsvp.table';
 
 const getFilteredGuests = async (ids: GuestId[]): Promise<Guest[]> =>
   (await guestsTable.all())
@@ -331,6 +333,55 @@ ${failures.join('\n')}
 
 The following recipients had no email attached:
 ${notSentList}`;
+
+  return {
+    statusCode: failures.length ? 500 : 200,
+    body: result,
+    headers: {
+      'Content-Type': 'text/plain'
+    }
+  };
+}
+
+export async function sendOneMonthUpdate(event: APIGatewayEvent, context: Context): Promise<ProxyResult> {
+  ensureSecret(event);
+
+  const rsvps = (await rsvpTable.all())
+    .filter(isFullRsvp)
+    .filter((rsvp) => rsvp.isAttending)
+    .filter((rsvp) => rsvp.guests[0].groupId === 'lamp');
+
+  const emails: SaveTheDateEmailData[] = rsvps.map((rsvp): SaveTheDateEmailData => ({
+    emails: [rsvp.email],
+    names: rsvp.guests.map((guest) => guest.firstName),
+  }));
+
+  console.log('Sending to:', JSON.stringify(emails));
+
+  const results = await Promise.all(emails.map((email) => {
+    return sendOneMonthEmail(email).then(() => ({
+      success: true,
+      names: email.names.join(' and '),
+      emails: email.emails.join(', ')
+    })).catch((e) => {
+      console.log('Failed to send: ' + email.emails.join(', '), e);
+      return {
+        success: false,
+        names: email.names.join(' and '),
+        emails: email.emails.join(', ')
+      };
+    });
+  }));
+
+  const successes = results.filter((result) => result.success).map((success) => `${success.names} (${success.emails})`);
+  const failures = results.filter((result) => !result.success).map((success) => `${success.names} (${success.emails})`);
+
+  const result =
+    `Successfully sent ${successes.length} emails:
+${successes.join('\n')}
+
+Failed to send ${failures.length} emails:
+${failures.join('\n')}`;
 
   return {
     statusCode: failures.length ? 500 : 200,

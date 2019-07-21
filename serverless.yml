@@ -170,6 +170,12 @@ functions:
       - http:
           method: post
           path: email/send-rsvp-reminder
+  sendOneMonthUpdate:
+    handler: server.sendOneMonthUpdate
+    events:
+      - http:
+          method: post
+          path: email/send-one-month-update
   serveStatic:
     handler: server.serveStatic
     events:
