@@ -149,6 +149,18 @@ export async function getAllResponses(event: APIGatewayEvent, context: Context):
     'songTitle',
     'dietaries',
   ];
+  const strcmp = (a: string, b: string): number => a < b ? -1 : a > b ? 1 : 0;
+  const byName = (a: { firstName: string, lastName: string }, b: { firstName: string, lastName: string }): number =>
+    strcmp(a.lastName, b.lastName) || strcmp(a.firstName, b.firstName);
+  const byGroup = (a: { firstName: string, lastName: string, groupId?: string }, b: { firstName: string, lastName: string, groupId?: string }) => {
+    if (a.groupId) {
+      return b.groupId ? strcmp(a.groupId, b.groupId) || byName(a, b) : -1;
+    } else {
+      return b.groupId ? 1 : byName(a, b);
+    }
+  };
+  responses.sort((a, b) => strcmp(a.response, b.response) || byGroup(a, b));
+  missingResponses.sort(byGroup);
   const result = [keys.join(',')].concat(
     [].concat(responses as any, missingResponses as any).map((response) => toCsv(response, keys)
     )).join('\n');
