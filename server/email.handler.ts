@@ -348,8 +348,7 @@ export async function sendOneMonthUpdate(event: APIGatewayEvent, context: Contex
 
   const rsvps = (await rsvpTable.all())
     .filter(isFullRsvp)
-    .filter((rsvp) => rsvp.isAttending)
-    .filter((rsvp) => rsvp.guests[0].groupId === 'lamp');
+    .filter((rsvp) => rsvp.isAttending);
 
   const emails: SaveTheDateEmailData[] = rsvps.map((rsvp): SaveTheDateEmailData => ({
     emails: [rsvp.email],
