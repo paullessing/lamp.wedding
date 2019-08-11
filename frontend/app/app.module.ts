@@ -18,6 +18,7 @@ import { DetailsComponent } from './rsvp/details/details.component';
 import { DietariesComponent } from './rsvp/dietaries/dietaries.component';
 import { DoneComponent } from './rsvp/done/done.component';
 import { FindUserComponent } from './rsvp/find-user/find-user.component';
+import { RsvpClosedComponent } from './rsvp/rsvp-closed/rsvp-closed.component';
 import { RsvpComponent } from './rsvp/rsvp.component';
 import { SongComponent } from './rsvp/song/song.component';
 import { ScheduleComponent } from './schedule/schedule.component';
@@ -38,11 +39,11 @@ import { GiftsComponent } from './gifts/gifts.component';
       children: [
         {
           path: 'rsvp/:userId',
-          component: RsvpComponent,
+          component: RsvpClosedComponent,
         },
         {
           path: 'rsvp',
-          component: FindUserComponent,
+          component: RsvpClosedComponent,
         },
         {
           path: 'location',
@@ -80,6 +81,7 @@ import { GiftsComponent } from './gifts/gifts.component';
     ConfirmComponent,
     DoneComponent,
     GiftsComponent,
+    RsvpClosedComponent,
 
     GuestNamePipe,
 
