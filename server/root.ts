@@ -20,6 +20,8 @@ const sendSaveTheDate2 = createRequestHandler(email.sendSaveTheDate2);
 const sendSaveTheDate3 = createRequestHandler(email.sendSaveTheDate3);
 const sendRsvpReminders = createRequestHandler(email.sendRsvpReminders);
 const sendOneMonthUpdate = createRequestHandler(email.sendOneMonthUpdate);
+const sendThankYouEmails = createRequestHandler(email.sendThankYouEmails);
+const sendSorryEmail = createRequestHandler(email.sendSorryEmail);
 
 export {
   guestsPutAll,
@@ -36,5 +38,7 @@ export {
   sendSaveTheDate3,
   sendRsvpReminders,
   sendOneMonthUpdate,
+  sendThankYouEmails,
+  sendSorryEmail,
   serveStatic,
 };

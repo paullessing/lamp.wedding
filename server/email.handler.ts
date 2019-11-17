@@ -1,4 +1,5 @@
 import { APIGatewayEvent, Context, ProxyResult } from 'aws-lambda';
+import { config } from '../config/config';
 import { isFullRsvp } from '../shared';
 import { Guest, GuestId } from '../shared/guest.model';
 import { guestsTable } from './db/guests.table';
@@ -10,7 +11,7 @@ import {
   sendReminderEmail,
   sendSaveTheDate2Email,
   sendSaveTheDate3Email,
-  sendSaveTheDateEmail
+  sendSaveTheDateEmail, sendSorryPartnerEmail, sendThankYouEmail
 } from './email';
 import { ensureSecret } from './secret';
 import { isTruthy } from './util/util';
@@ -381,6 +382,104 @@ ${successes.join('\n')}
 
 Failed to send ${failures.length} emails:
 ${failures.join('\n')}`;
+
+  return {
+    statusCode: failures.length ? 500 : 200,
+    body: result,
+    headers: {
+      'Content-Type': 'text/plain'
+    }
+  };
+}
+
+export async function sendThankYouEmails(event: APIGatewayEvent, context: Context): Promise<ProxyResult> {
+  ensureSecret(event);
+
+  const rsvps = (await rsvpTable.all())
+    .filter(isFullRsvp)
+    .filter((rsvp) => rsvp.isAttending);
+
+  const emails: SaveTheDateEmailData[] = rsvps.map((rsvp): SaveTheDateEmailData => ({
+    emails: [rsvp.email],
+    names: rsvp.guests.map((guest) => guest.firstName),
+  }));
+
+  console.log('Sending to:', JSON.stringify(emails));
+
+  const results = await Promise.all(emails.map((email) => {
+    return sendThankYouEmail(email).then(() => ({
+      success: true,
+      names: email.names.join(' and '),
+      emails: email.emails.join(', ')
+    })).catch((e) => {
+      console.log('Failed to send: ' + email.emails.join(', '), e);
+      return {
+        success: false,
+        names: email.names.join(' and '),
+        emails: email.emails.join(', ')
+      };
+    });
+  }));
+
+  const successes = results.filter((result) => result.success).map((success) => `${success.names} (${success.emails})`);
+  const failures = results.filter((result) => !result.success).map((success) => `${success.names} (${success.emails})`);
+
+  const result =
+    `Successfully sent ${successes.length} emails:
+${successes.join('\n')}
+
+Failed to send ${failures.length} emails:
+${failures.join('\n')}`;
+
+  return {
+    statusCode: failures.length ? 500 : 200,
+    body: result,
+    headers: {
+      'Content-Type': 'text/plain'
+    }
+  };
+}
+
+export async function sendSorryEmail(event: APIGatewayEvent, context: Context): Promise<ProxyResult> {
+  ensureSecret(event);
+
+  const emails: SaveTheDateEmailData[] = [
+    {
+      names: ['Resi'],
+      emails: ['theres.lessing@gmail.com']
+    },
+    {
+      names: ['Naila'],
+      emails: ['naila_dhalla@hotmail.com']
+    },
+  ];
+
+  console.log('Sending to:', JSON.stringify(emails));
+
+  const results = await Promise.all(emails.map((email) => {
+    return sendSorryPartnerEmail(email).then(() => ({
+      success: true,
+      names: email.names.join(' and '),
+      emails: email.emails.join(', ')
+    })).catch((e) => {
+      console.log('Failed to send: ' + email.emails.join(', '), e);
+      return {
+        success: false,
+        names: email.names.join(' and '),
+        emails: email.emails.join(', ')
+      };
+    });
+  }));
+
+  const successes = results.filter((result) => result.success).map((success) => `${ success.names } (${ success.emails })`);
+  const failures = results.filter((result) => !result.success).map((success) => `${ success.names } (${ success.emails })`);
+
+  const result =
+    `Successfully sent ${ successes.length } emails:
+${ successes.join('\n') }
+
+Failed to send ${ failures.length } emails:
+${ failures.join('\n') }`;
 
   return {
     statusCode: failures.length ? 500 : 200,

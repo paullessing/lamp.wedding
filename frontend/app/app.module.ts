@@ -24,6 +24,7 @@ import { SongComponent } from './rsvp/song/song.component';
 import { ScheduleComponent } from './schedule/schedule.component';
 import { DayNightService } from './services/day-night.service';
 import { GiftsComponent } from './gifts/gifts.component';
+import { PhotosComponent } from './photos/photos.component';
 
 @NgModule({
   imports: [
@@ -58,6 +59,10 @@ import { GiftsComponent } from './gifts/gifts.component';
           component: GiftsComponent
         },
         {
+          path: 'photos',
+          component: PhotosComponent,
+        }, // http://picti.net/7QmGq
+        {
           path: '**',
           component: HomepageComponent,
           canDeactivate: [EnsureNightGuard],
@@ -84,6 +89,8 @@ import { GiftsComponent } from './gifts/gifts.component';
     RsvpClosedComponent,
 
     GuestNamePipe,
+
+    PhotosComponent,
 
   ],
   providers: [

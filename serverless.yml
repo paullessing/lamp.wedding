@@ -176,6 +176,18 @@ functions:
       - http:
           method: post
           path: email/send-one-month-update
+  sendThankYouEmails:
+    handler: server.sendThankYouEmails
+    events:
+      - http:
+          method: post
+          path: email/send-thank-yous
+  sendSorryEmail:
+    handler: server.sendSorryEmail
+    events:
+      - http:
+          method: post
+          path: email/send-sorry-partner
   serveStatic:
     handler: server.serveStatic
     events:

@@ -21,6 +21,9 @@ export const NAVIGATION_ITEMS: NavigationItem[] = [{
 },{
   name: 'Gifts',
   location: '/gifts'
+},{
+  name: 'Photos',
+  location: '/photos'
 }];
 
 @Component({
